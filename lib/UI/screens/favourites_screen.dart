@@ -15,17 +15,17 @@ class FavouritesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
         return Scaffold(
         appBar: AppBar(
-          title: const Text('Favourites', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w500)),
-          backgroundColor: const Color(0xFF181B21),
+          title:  Text('Favourites', 
+            style:Theme.of(context).textTheme.headlineSmall ),
           centerTitle: true,
           elevation: 5,
         ),
-        backgroundColor: const Color(0xFF0E1118),
         body: BlocSelector<FavouritedCubit, FavouritedState, Set<Recipe>>(
           selector: (state) => state.favouritedRecipes,
           builder: (context, favedSet) {
             if (favedSet.isEmpty){
-              return const Center(child: Text('No favourites yet.', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w400)));
+              return  Center(child: Text('No favourites yet.', 
+              style: Theme.of(context).textTheme.bodyMedium));
             }
             return ListView.builder(
             itemCount: favedSet.length,

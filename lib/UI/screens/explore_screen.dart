@@ -20,10 +20,6 @@ class ExploreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-
-
-      backgroundColor: const Color(0xFF0E1118),
       body: BlocBuilder<ExploreCubit, ExploreState>(
         buildWhen: (previous, current) => previous.runtimeType != current.runtimeType,
         builder: (context, state) {
@@ -60,7 +56,7 @@ class ExploreScreen extends StatelessWidget {
                     ),
 
                     const SliverToBoxAdapter(child: RandomPicker()),
-                    SliverToBoxAdapter(child: _buildLabelSeparator()),
+                    SliverToBoxAdapter(child: _buildLabelSeparator(context)),
 
                     // Selector for the Search and Filter Bar
                     SliverToBoxAdapter(
@@ -98,7 +94,7 @@ class ExploreScreen extends StatelessWidget {
   Widget _buildRecipeListSliver(BuildContext context, List<Recipe> allRecipes) {
     if (allRecipes.isEmpty) {
       return const SliverFillRemaining( // A sliver that fills the remaining space
-        child: Center(child: Text("No recipes found.", style: TextStyle(color: Colors.white))),
+        child: Center(child: Text("No recipes found.",)),
       );
     }
     // SliverList is the sliver equivalent of ListView.builder and is LAZY.
@@ -116,18 +112,14 @@ class ExploreScreen extends StatelessWidget {
   // NOTE: All your other helper methods (_buildGreeetingSentence, _buildLabelSeparator, etc.)
   // remain exactly the same. They are pasted below for completeness.
 
-  Widget _buildLabelSeparator() {
+  Widget _buildLabelSeparator(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
           'Recipes',
-          style: GoogleFonts.hedvigLettersSerif(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.w400,
-          ),
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
       ),
     );
@@ -140,27 +132,55 @@ class ExploreScreen extends StatelessWidget {
     return 'Evening';
   }
 
-  Widget _buildGreeetingSentence(String greeting, String username, BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Text('Good $greeting, ', style: GoogleFonts.hedvigLettersSerif(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w400)),
-                Text('$username!', style: GoogleFonts.hedvigLettersSerif(color: const Color(0xFFDB7A2B), fontSize: 22, fontWeight: FontWeight.w400)),
-              ],
-            ),
-            _buildLevelDropdown(context)
-          ],
-        ),
-        Text('Ready to cook something amazing?', style: GoogleFonts.nunito(color: const Color(0xFF888481), fontSize: 14, fontWeight: FontWeight.w400)),
-      ],
-    );
-  }
+Widget _buildGreeetingSentence(String greeting, String username, BuildContext context) {
+  // Get the styles from the theme once to make the code cleaner
+  final headlineStyle = Theme.of(context).textTheme.headlineSmall;
+  final primaryColor = Theme.of(context).colorScheme.primary;
 
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center, // Better vertical alignment
+        children: [
+          // --- THE FIX: Replace the inner Row with RichText ---
+          // RichText is perfect for a single line of text with multiple styles.
+          // It handles wrapping and overflow correctly as one element.
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                // Default style for the entire sentence
+                style: headlineStyle?.copyWith(fontWeight: FontWeight.normal),
+                children: <TextSpan>[
+                  TextSpan(text: 'Good $greeting, '),
+                  TextSpan(
+                    text: '$username!',
+                    // Specific style for the username
+                    style: headlineStyle?.copyWith(color: primaryColor),
+                  ),
+                ],
+              ),
+              maxLines: 2, // Allow it to wrap to a second line if needed
+              overflow: TextOverflow.ellipsis, // Add ellipsis if it's still too long
+            ),
+          ),
+          // --- END OF FIX ---
+
+          const SizedBox(width: 8), // Add some spacing for safety
+          _buildLevelDropdown(context)
+        ],
+      ),
+      Text(
+        'Ready to cook something amazing?',
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.normal,
+              color: const Color(0xFF888481),
+            ),
+      ),
+    ],
+  );
+}
   Widget _getIconForLevel(UserCookingLevel level) {
     switch (level) {
       case UserCookingLevel.chef: return const Icon(Icons.whatshot_outlined, color: Colors.orange, size: 14);

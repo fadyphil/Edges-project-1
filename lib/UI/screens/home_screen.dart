@@ -10,8 +10,6 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AutoTabsScaffold(
-  
-      backgroundColor: const Color(0xFF0E1118),
       
       // The bottom navigation bar gets its state from the router.
       bottomNavigationBuilder: (context, tabsRouter) {

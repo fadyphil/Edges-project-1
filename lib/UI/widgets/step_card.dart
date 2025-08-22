@@ -13,17 +13,16 @@ class StepCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildStepCard(index, step, userfactor);
+    return _buildStepCard(index, step, userfactor, context);
   }
 }
 
 
-Widget _buildStepCard(int index,Step? step, num userfactor,{bool? isCurrent = false}) {
+Widget _buildStepCard(int index,Step? step, num userfactor,BuildContext context) {
   final bool shouldBuild ;
-  final double opacity;
 
   if(step==null){
-    return SizedBox(width: 0,height: 0,);
+    return SizedBox.shrink();
   }
 
   if(step.note==null){
@@ -31,44 +30,36 @@ Widget _buildStepCard(int index,Step? step, num userfactor,{bool? isCurrent = fa
   }else{
     shouldBuild=true;
   }
-  if(isCurrent==false || isCurrent==null ){
-    opacity=1.0;
-  }else{
-    opacity=0.6;
-  }
-  return Opacity(
-    opacity: opacity,
-    child: Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      color: const Color(0xFF181B21),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-         
-          spacing: 16,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeaderRow(index, step.title, ((step.baseTimeInSeconds/60)*userfactor).toStringAsFixed(1), step.type)
-            ,Column(
-              mainAxisSize:  MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildStepType(step.type.name.toLowerCase()),
-                const SizedBox(height: 4),
-            Text(step.description , style: GoogleFonts.nunito(
-              color: Color(0xFF888481), fontSize: 14, fontWeight: FontWeight.w400,))
-              ],
-            ),
-            shouldBuild ? buildinfo(step.note!, shouldBuild) : SizedBox(width: 0,height: 0,)
-          ],
-        ),
+  return Card(
+    margin: const EdgeInsets.only(bottom: 16),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+       
+        spacing: 16,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeaderRow(index, step.title, 
+          ((step.baseTimeInSeconds/60)*userfactor).toStringAsFixed(1), step.type, context)
+          ,Column(
+            mainAxisSize:  MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildStepType(step.type.name.toLowerCase()),
+              const SizedBox(height: 4),
+          Text(step.description , style: GoogleFonts.nunito(
+            color: Color(0xFF888481), fontSize: 14, fontWeight: FontWeight.w400,))
+            ],
+          ),
+          shouldBuild ? buildinfo(step.note!, shouldBuild) : SizedBox.shrink()
+        ],
       ),
     ),
   );
 }
 
 
-Widget  _buildHeaderRow (int index, String title, String time,StepType type){
+Widget  _buildHeaderRow (int index, String title, String time,StepType type,BuildContext context){
   Color color;
   Color textColor;
   if(type.name=='cooking'){
@@ -88,19 +79,18 @@ Widget  _buildHeaderRow (int index, String title, String time,StepType type){
           color: textColor, fontSize: 12, fontWeight: FontWeight.w600,
         )),
       ),
-      Text(title, style: GoogleFonts.nunito(
-        color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600,
-      )),
-      const Spacer(),
+      Expanded(
+        child: Text(title, style: GoogleFonts.nunito(
+          color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600,
+        )),
+      ),
+
       Row(
         mainAxisSize: MainAxisSize.min,
         spacing: 4,
         children: [
           Icon(Icons.timelapse_rounded , color: Color(0xFF888481),size: 12,),
-      Text('${time.toString()} Minutes' , style: GoogleFonts.nunito(
-        color: Color(0xFF888481), fontSize: 12, fontWeight: FontWeight.w400,
-      
-      ))
+      Text('${time.toString()} Minutes' , style: Theme.of(context).textTheme.bodySmall)
         ],
       )
     ],
@@ -118,14 +108,19 @@ Widget buildinfo (String info  , bool shouldBuild){
       color: Color(0xFF2B2E33),
       borderRadius: BorderRadius.circular(8)
     ),
-    child: Row(
-      spacing: 4,
-      children: [
-        Icon(Icons.info_outline , color: Colors.white,size: 18,),
-        Text(info, style: GoogleFonts.nunito(
-          color: Colors.white, fontSize: 12, fontWeight: FontWeight.w400,
-        ),)
-      ],
+    child: Center(
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        alignment: WrapAlignment.center,
+        runSpacing: 8,
+        spacing: 4,
+        children: [
+          Icon(Icons.info_outline , color: Colors.white,size: 18,),
+          Text(info, style: GoogleFonts.nunito(
+            color: Colors.white, fontSize: 12, fontWeight: FontWeight.w400,
+          ),)
+        ],
+      ),
     ),
   );
 }

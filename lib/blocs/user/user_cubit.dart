@@ -12,4 +12,8 @@ class UserCubit extends Cubit<UserState>{
   }
   double getUsersFactor ()=>timeFactor[state.user.level]!;
 
+  void changename (String newname){
+    emit(state.copyWith(user: state.user.copyWith(name: newname)));
+    }
+
 }

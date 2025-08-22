@@ -18,18 +18,18 @@ class CustomBottomNavBar extends StatelessWidget {
   static const Color _selectedColorIcon = Color(0xFFDB7A2B);
   static const Color _selectedLabel = Colors.white;
   static const Color _unselectedColor = Color(0xFF888481);
-  static const Color _backgroundColor = Color(0xFF181B21);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(top: 6, bottom: 6, left: 16, right: 16),
       decoration: BoxDecoration(
-        color: _backgroundColor,
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.only(),
        
         border: Border(
           top: BorderSide(
-            color: const Color(0xFF2B2E33),
+            color: Theme.of(context).colorScheme.secondary,
             width: 1.0,
           ),
         )

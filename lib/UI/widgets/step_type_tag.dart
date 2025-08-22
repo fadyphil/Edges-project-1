@@ -40,10 +40,14 @@ Widget  _buildStepType(String type, {num? extranumber}){
         ),
         Text(type[0].toUpperCase() + type.substring(1).toLowerCase(), style: GoogleFonts.nunito(
           color: textColor, fontSize: 14, fontWeight: FontWeight.w600,
-        ),),
+        ),
+        overflow: TextOverflow.ellipsis,
+        ),
         if(extranumber!=null) Text('- ${extranumber.toString()}m', style: TextStyle(
           color: textColor, fontSize: 14, fontWeight: FontWeight.w600,
-        ),)
+        ),
+        overflow: TextOverflow.ellipsis,
+        )
       ],
     ),
   );

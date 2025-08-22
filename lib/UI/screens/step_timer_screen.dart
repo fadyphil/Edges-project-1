@@ -38,7 +38,6 @@ class _StepTimerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color backgroundColor = Color(0xFF0E1118);
     final recipe = context.read<StepTimerCubit>().recipe;
     final userfactor = context.watch<UserCubit>().getUsersFactor();
 
@@ -51,26 +50,18 @@ class _StepTimerView extends StatelessWidget {
             : null;
 
         return Scaffold(
-          
-          backgroundColor: backgroundColor,
           body: CustomScrollView(
             slivers: [
               SliverAppBar(
-                backgroundColor: const Color(0xFF181B21),
-                elevation: 0,
                 pinned: true,
                 title: Text(
                   recipe.name,
-                  style: GoogleFonts.lora(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 centerTitle: true,
                 leading: IconButton(
                   onPressed: () => context.router.pop(),
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  icon: const Icon(Icons.arrow_back,),
                 ),
               ),
               SliverPadding(
@@ -78,7 +69,7 @@ class _StepTimerView extends StatelessWidget {
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
                    const SizedBox(height: 16),
-                    _buildStepIndicator(state.currentStepIndex + 1, recipe.steps.length),
+                    _buildStepIndicator(state.currentStepIndex + 1, recipe.steps.length, context),
                     const SizedBox(height: 16),
                     // _buildStepCard(currentStep, state.currentStepIndex + 1, isCurrent: true),
                     StepCard(index:state.currentStepIndex,step:  currentStep, userfactor: userfactor, isCurrent: true),
@@ -110,9 +101,9 @@ class _StepTimerView extends StatelessWidget {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                const Color(0xFF0E1118),
-                                const Color(0xFF0E1118).withOpacity(0.9),
-                                const Color(0xFF0E1118).withOpacity(0.35),
+                                Theme.of(context).colorScheme.background,
+                                Theme.of(context).colorScheme.background.withOpacity(0.9),
+                                Theme.of(context).colorScheme.background.withOpacity(0.35),
                               ],
                               stops: const [0.48, 0.5, 1],
                               begin: Alignment.bottomCenter,
@@ -137,7 +128,6 @@ class _StepTimerView extends StatelessWidget {
 
                     FloatingActionButton(
                       heroTag: 'done',
-                      backgroundColor: const Color(0xFFDB7A2B),
                       onPressed: (){
                       context.read<StepTimerCubit>().completeStepAndMoveToNext();
                     },
@@ -146,11 +136,7 @@ class _StepTimerView extends StatelessWidget {
                       children: [
                         Text(
                           'Done with this step ',
-                          style: GoogleFonts.nunito(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
+                          style:Theme.of(context).textTheme.bodyMedium
                         ),
                         Icon(Icons.check, color: Colors.white, size: 16)
                       ],
@@ -170,15 +156,14 @@ class _StepTimerView extends StatelessWidget {
 
   // --- UI HELPER WIDGETS ---
 
-Widget _buildStepIndicator(int currentStep, int totalSteps) {
+Widget _buildStepIndicator(int currentStep, int totalSteps,BuildContext context) {
   const double baseFontSize = 32.0; // The original font size for the step indicator
 
   return Row(
     crossAxisAlignment: CrossAxisAlignment.baseline,
     textBaseline: TextBaseline.alphabetic,
     children: [
-      Text('Step', style: GoogleFonts.hedvigLettersSerif(
-        color: Colors.white, fontSize: 24, fontWeight: FontWeight.w400)),
+      Text('Step', style: Theme.of(context).textTheme.headlineMedium),
       const SizedBox(width: 8),
 
       RichText(

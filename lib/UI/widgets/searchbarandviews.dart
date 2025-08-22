@@ -25,18 +25,20 @@ class SearchAndFilterBar extends StatelessWidget {
                 // Call the function on the cubit to update the search query
                 context.read<ExploreCubit>().searchChanged(query);
               },
-              style: const TextStyle(color: Colors.white),
+              
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16  ,vertical: 8),
                 hintText: 'Search for a recipe...',
-                hintStyle: const TextStyle(color: Color(0xFF888481), fontSize: 14, fontWeight: FontWeight.w600),
+                hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xFF888481)) ,
                 prefixIcon: const Icon(Icons.search, 
-                  color: Color(0xFF888481),
+                  color:Color(0xFF888481),
                   size: 16,
                   ),
-                filled: true,
-                fillColor: const Color(0xFF181B21),
+                
                 border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    width: 1.0,
+                  ),
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
@@ -72,7 +74,7 @@ class SearchAndFilterBar extends StatelessWidget {
   Widget _buildViewToggleButton(BuildContext context, ExploreViewType currentViewType) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF181B21),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

@@ -6,12 +6,6 @@ import 'package:mini_project_1/UI/widgets/step_card.dart';
 import '../../data/models/recipe_model.dart';
 
 
-
-
-
-
-
-
 List<Widget> buildTimelineAndStepsSlivers(Recipe recipe, num userfactor) {
 
   return [
@@ -26,11 +20,6 @@ List<Widget> buildTimelineAndStepsSlivers(Recipe recipe, num userfactor) {
     
   ];
 }
-
-
-
-
-
 
 
 SliverList _buildStepsSlivers(Recipe recipe,num userfactor) {

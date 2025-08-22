@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:mini_project_1/UI/widgets/step_type_tag.dart';
 import 'package:mini_project_1/data/models/recipe_model.dart';
 
@@ -30,14 +29,11 @@ class TimelineBar extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('TimeLine', style: GoogleFonts.hedvigLettersSerif(
-              color: Colors.white, fontSize: 24, fontWeight: FontWeight.w400,
-            )),
+            Text('TimeLine', style:Theme.of(context).textTheme.headlineMedium),
 
-            Row(
+            Wrap(
               spacing: 50,
-              mainAxisAlignment: MainAxisAlignment.start,
-              
+              runSpacing: 8,
               children: [
                 StepTypeTag(type: 'Prep'.toLowerCase(), extranumber: prepTimeMinutes,),
                 StepTypeTag(type: 'Cooking'.toLowerCase(), extranumber: cookingTimeMinutes,),

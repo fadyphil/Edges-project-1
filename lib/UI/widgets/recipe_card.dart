@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mini_project_1/UI/widgets/info_row_builder.dart';
 import 'package:mini_project_1/UI/widgets/tag_row_builder.dart';
 import 'package:mini_project_1/blocs/user/user_cubit.dart';
 import 'package:mini_project_1/data/models/models.dart';
@@ -32,11 +33,10 @@ class RecipeCard extends StatelessWidget {
         );
       },
       child: Card(
-        shadowColor: Colors.black.withOpacity(0.5),
+        
         clipBehavior: Clip.antiAlias,
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        color: const Color(0xFF181B21), // A dark color from the Figma design
         elevation: 5,
         child: Row(
           
@@ -47,9 +47,9 @@ class RecipeCard extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors:  [
-                    const Color(0xFF181B21),
-                    const Color(0xFF181B21).withOpacity(0.7),
-                    const Color(0xFF181B21).withOpacity(0.02)
+                    Theme.of(context).colorScheme.surface,
+                    Theme.of(context).colorScheme.surface.withOpacity(0.7),
+                    Theme.of(context).colorScheme.surface.withOpacity(0.02)
                   ] ,
                   stops: const [0.02,0.15,1],
                   begin: Alignment.centerRight,
@@ -73,17 +73,13 @@ class RecipeCard extends StatelessWidget {
                   children: [
                     Text(
                       recipe.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 4),
                     // Dynamically build the tags
                     TagRowBuilder(recipe: recipe),
-                    const SizedBox(height: 16),
-                    _buildInfoRow(recipe,userfactor),
+                    const SizedBox(height: 22),
+                    info_row_builder(recipe: recipe, userfactor: userfactor),
                   ],
                 ),
               ),
@@ -148,29 +144,6 @@ class RecipeCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-
-  Widget _buildInfoRow(Recipe recipe , double userfactor) {
-    return Row(
-      children: [
-        const Icon(Icons.timer_outlined, color: Colors.grey, size: 12),
-        const SizedBox(width: 4),
-        Text(
-          '${(recipe.totalBaseTimeInSeconds / 60 * userfactor).ceil()} Mins',
-          style: const TextStyle(color: Colors.grey, fontSize: 12),
-        ),
-        const SizedBox(width: 4),
-        Text('-', style: const TextStyle(color: Colors.grey, fontSize: 12)),
-        const SizedBox(width: 4),
-        const Icon(Icons.food_bank_outlined, color: Colors.grey, size: 12),
-        const SizedBox(width: 4),
-        Text(
-          '${recipe.stepCount} Steps',
-          style: const TextStyle(color: Colors.grey, fontSize: 12),
-        ),
-      ],
     );
   }
 }

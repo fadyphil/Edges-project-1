@@ -5,12 +5,12 @@ import 'package:mini_project_1/data/models/enums.dart';
 import 'package:mini_project_1/data/models/recipe_model.dart';
 
 
-List<Widget> buildOverviewSlivers(Recipe recipe, num userfactor) {
+List<Widget> buildOverviewSlivers(Recipe recipe, num userfactor, BuildContext context) {
   return [
     SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: _buildOverviewContent(recipe, userfactor),
+        child: _buildOverviewContent(recipe, userfactor, context),
       ),
     ),
     _buildIngredientsList(recipe),
@@ -21,16 +21,12 @@ List<Widget> buildOverviewSlivers(Recipe recipe, num userfactor) {
         padding: const EdgeInsets.only(left: 16),
         child: Text(
           'Nutrition',
-          style: GoogleFonts.hedvigLettersSerif(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.w400,
-          ),
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
       ),
     ),
     SliverToBoxAdapter(
-      child: _buildNutritionFacts(recipe),
+      child: _buildNutritionFacts(recipe, context),
     ),
   ];
 }
@@ -53,29 +49,17 @@ SliverList _buildIngredientsList(Recipe recipe) {
               children: [
                 Text(
                   recipe.ingredients[index].quantity.toInt().toString(),
-                  style: GoogleFonts.nunito(
-                    color: Color(0xFF888481),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 SizedBox(width: 4),
                 Text(
                   recipe.ingredients[index].unit.name[0].toUpperCase() + recipe.ingredients[index].unit.name.substring(1),
-                  style: GoogleFonts.nunito(
-                    color: Color(0xFF888481),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall,
                 )
               ],
             ),
             Text(recipe.ingredients[index].name,
-                style: GoogleFonts.nunito(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ))
+                style: Theme.of(context).textTheme.bodyMedium)
           ],
         ),
       );
@@ -84,7 +68,7 @@ SliverList _buildIngredientsList(Recipe recipe) {
   );
 }
 
-Widget _buildOverviewContent(Recipe recipe, num userfactor) {
+Widget _buildOverviewContent(Recipe recipe, num userfactor,BuildContext context) {
   // ... (no changes needed here, just ensure Row's `children` don't have spacing issues)
   return Column(
     crossAxisAlignment: CrossAxisAlignment.center,
@@ -92,19 +76,22 @@ Widget _buildOverviewContent(Recipe recipe, num userfactor) {
       const SizedBox(height: 16),
       Row(
         children: [
-          Expanded(child: _buildInfoCard('timer', "Total time", '${(recipe.totalBaseTimeInSeconds / 60 * userfactor).ceil()} Minutes')),
+          Expanded(child: _buildInfoCard('timer', "Total time", 
+          '${(recipe.totalBaseTimeInSeconds / 60 * userfactor).ceil()} Minutes', context)),
           const SizedBox(width: 8),
-          Expanded(child: _buildInfoCard('steps', "Steps", '${recipe.stepCount} Steps')),
+          Expanded(child: _buildInfoCard('steps', "Steps", 
+          '${recipe.stepCount} Steps', context)),
         ],
       ),
       const SizedBox(height: 8),
       Row(
         children: [
           Expanded(
-              child: _buildInfoCard('difficulty', "Difficulty", recipe.difficulty.name,
+              child: _buildInfoCard('difficulty', "Difficulty", recipe.difficulty.name, context,
                   painter: _buildDifficultyDots(recipe.difficulty))),
           const SizedBox(width: 8),
-          Expanded(child: _buildInfoCard('acceptance_margin', "Acceptance Margin", '${recipe.acceptanceMarginInSeconds ~/ 60} Minutes')),
+          Expanded(child: _buildInfoCard('acceptance_margin', "Acceptance Margin", 
+          '${recipe.acceptanceMarginInSeconds ~/ 60} Minutes', context)),
         ],
       ),
       const SizedBox(height: 16),
@@ -112,12 +99,7 @@ Widget _buildOverviewContent(Recipe recipe, num userfactor) {
       const SizedBox(height: 16),
       Text(
         "\" ${recipe.description}",
-        style: GoogleFonts.nunito(
-          color: Colors.grey.shade400,
-          fontSize: 14,
-          fontStyle: FontStyle.italic,
-          height: 1.5,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontStyle: FontStyle.italic),
       ),
       const SizedBox(height: 16),
       SvgPicture.asset('assets/images/separator.svg'),
@@ -126,11 +108,7 @@ Widget _buildOverviewContent(Recipe recipe, num userfactor) {
         alignment: Alignment.centerLeft,
         child: Text(
           'Ingredients',
-          style: GoogleFonts.hedvigLettersSerif(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.w400,
-          ),
+          style:Theme.of(context).textTheme.headlineMedium,
         ),
       ),
       const SizedBox(height: 16),
@@ -138,7 +116,7 @@ Widget _buildOverviewContent(Recipe recipe, num userfactor) {
   );
 }
 
-Widget _buildInfoCard(String icon, String title, String value, {Widget? painter}) {
+Widget _buildInfoCard(String icon, String title, String value, BuildContext context, {Widget? painter}) {
   // Fix for Row issue
   return Container(
     padding: const EdgeInsets.fromLTRB(8, 8, 8, 8), // Added right padding
@@ -164,12 +142,16 @@ Widget _buildInfoCard(String icon, String title, String value, {Widget? painter}
               Row(
                 // Removed spacing, use SizedBox instead
                 children: [
-                  Text(title, style: TextStyle(color: Color(0xFF888481), fontSize: 12)),
+                  Expanded(
+                    child: Text(title, style: Theme.of(context).textTheme.bodySmall,
+                    overflow: TextOverflow.ellipsis,maxLines: 1,),
+                  ),
                   const SizedBox(width: 4),
                   if (painter != null) painter,
                 ],
               ),
-              Text(value, style: GoogleFonts.nunito(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
+              Text(value, 
+              style:Theme.of(context).textTheme.bodyMedium ),
             ],
           ),
         )
@@ -225,23 +207,22 @@ Widget _buildDifficultyDots(RecipeDifficulty difficulty) {
   }
 
 
-Widget _buildNutritionFacts(Recipe recipe) {
+Widget _buildNutritionFacts(Recipe recipe,BuildContext context) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16,8,16,8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: const Color(0xFF181B21)
+        color: Theme.of(context).colorScheme.surface,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-      
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildFactCol(recipe.nutrition.calories, 'Calories', 'kcal'),
+          Expanded(child: _buildFactCol(recipe.nutrition.calories, 'Calories', 'kcal')),
           _buildStickSeparator(),
-          _buildFactCol(recipe.nutrition.protein, 'Protein', 'g'),
+          Expanded(child: _buildFactCol(recipe.nutrition.protein, 'Protein', 'g')),
           _buildStickSeparator(),
-          _buildFactCol(recipe.nutrition.carbs, 'Carbohydrates', 'g'),
+          Expanded(child: _buildFactCol(recipe.nutrition.carbs, 'Carbohydrates', 'g')),
         ],
       ),
     ) ;
@@ -256,18 +237,22 @@ Widget  _buildFactCol (int nutrition, String title  , String unit){
         title, style: GoogleFonts.nunito(
           color: Color(0xFF888481), fontSize: 12, fontWeight: FontWeight.w400,
         ),
+        overflow: TextOverflow.ellipsis,
       ),
       const SizedBox(height: 4),
-      Row(
+      Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Text(
             nutrition.toString()  , style: GoogleFonts.nunito(
               color: Colors.white, fontSize: 18, fontWeight: FontWeight.w400,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
           Text(unit,style: GoogleFonts.hedvigLettersSerif(
           color: Color(0xFF888481), fontSize: 12, fontWeight: FontWeight.w400,
-        ),)
+        ),
+          overflow: TextOverflow.ellipsis,)
         ],
       )
     ],

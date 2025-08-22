@@ -17,7 +17,6 @@ class RandomPicker extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 5,
-      color: const Color(0xFF181B21), // Matching the dark card theme
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
@@ -29,7 +28,6 @@ class RandomPicker extends StatelessWidget {
               child: Icon(
                 Icons.casino_outlined, // A 'dice' icon fits "Random" well
                 size: 28,
-                color: Colors.white,
               ),
             ),
             const SizedBox(width: 16),
@@ -41,23 +39,15 @@ class RandomPicker extends StatelessWidget {
               child: Column(
                 // This aligns the text to the left.
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children:  [
                   Text(
                     'Random Recipe',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   SizedBox(height: 4),
                   Text(
                     'Don\'t know what to cook?',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
               ),
@@ -92,7 +82,6 @@ class RandomPicker extends StatelessWidget {
               child: const Icon(
                 Icons.arrow_outward_rounded,
                 color: Colors.black,
-                
               ),
             ),
           ],

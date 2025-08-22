@@ -1,10 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mini_project_1/UI/widgets/info_row_builder.dart';
 import 'package:mini_project_1/UI/widgets/tag_row_builder.dart';
 import 'package:mini_project_1/blocs/user/user_cubit.dart';
 import 'package:mini_project_1/data/models/models.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:mini_project_1/routes/app_router.dart';
 
 class TodayChallengeCard extends StatelessWidget {
@@ -18,7 +18,6 @@ class TodayChallengeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final userfactor = context.watch<UserCubit>().getUsersFactor();
     return Card(
-      color: const Color(0xFF181B21),
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18),),
       clipBehavior: Clip.antiAlias, // Important for rounding the image corners
@@ -38,9 +37,9 @@ class TodayChallengeCard extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFF181B21),
-                    const Color(0xFF181B21).withOpacity(0.9),
-                    const Color(0xFF181B21).withOpacity(0)
+                    Theme.of(context).colorScheme.surface,
+                    Theme.of(context).colorScheme.surface.withOpacity(0.9),
+                    Theme.of(context).colorScheme.surface.withOpacity(0)
                   ],
                   stops: const [0.1, 0.3, 1],
                   begin: Alignment.centerLeft,
@@ -69,15 +68,11 @@ class TodayChallengeCard extends StatelessWidget {
                 // "Today's Challenge" Title
                 Row(
                   children: [
-                    const Icon(Icons.workspace_premium_outlined, color: Colors.white, size: 15),
+                    const Icon(Icons.workspace_premium_outlined,size: 14,),
                     const SizedBox(width: 4),
                      Text(
                       'Today\'s Challenge',
-                      style: GoogleFonts.nunito(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white 
-                        )
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),
                     ),
                   ],
                 ),
@@ -86,11 +81,7 @@ class TodayChallengeCard extends StatelessWidget {
                 // Recipe Name
                 Text(
                   recipe.name,
-                  style: GoogleFonts.hedvigLettersSerif(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFFF3A05A)
-                  ),
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Color(0xFFDB7A2B)),
                 ),
                 const SizedBox(height: 4),
       
@@ -99,7 +90,7 @@ class TodayChallengeCard extends StatelessWidget {
                 const SizedBox(height: 14),
       
                 // Info (Time and Steps)
-                _buildInfoRow(recipe,userfactor),
+                info_row_builder(recipe: recipe, userfactor: userfactor),
                 const SizedBox(height: 35),
       
                 // Start Button
@@ -136,26 +127,5 @@ class TodayChallengeCard extends StatelessWidget {
   }
 
   // --- Helper methods for building UI parts ---
-
-  Widget _buildInfoRow(Recipe recipe, double  userfactor) {
-    return Row(
-      children: [
-        const Icon(Icons.timer_outlined, color: Colors.white70, size: 12),
-        const SizedBox(width: 4),
-        Text(
-          '${(recipe.totalBaseTimeInSeconds ~/ 60 * userfactor).ceil()} Minutes',
-          style: const TextStyle(color: Colors.white70, fontSize: 12),
-        ),
-        const SizedBox(width: 4),
-        const Text('-', style: TextStyle(color: Colors.white70, fontSize: 12)),
-        const SizedBox(width: 4),
-        const Icon(Icons.food_bank_outlined, color: Colors.white70, size: 12),
-        const SizedBox(width: 4),
-        Text(
-          '${recipe.stepCount} Steps',
-          style: const TextStyle(color: Colors.white70, fontSize: 12),
-        ),
-      ],
-    );
-  }
 }
+

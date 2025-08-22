@@ -7,27 +7,31 @@ class TagRowBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildTagsRow(recipe.tags);
+    return _buildTagsRow(recipe.tags, context);
   }
 }
- Widget _buildTagsRow(List<String> tags) {
+ Widget _buildTagsRow(List<String> tags,BuildContext context) {
     final tagsToShow = tags.take(3).toList();
-    return Row(
-      children: tagsToShow.map((tag) => _buildTag(tag)).toList(),
+    return Wrap(
+      
+      runSpacing: 4,
+      children:
+        tagsToShow.map((tag) => _buildTag(tag, context)).toList(),
+      
     );
   }
 
-  Widget _buildTag(String label) {
+  Widget _buildTag(String label, BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(right: 4),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Color(0xFF2B2E33),
+        color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         label,
-        style: const TextStyle(color: Colors.white, fontSize: 9),
+        style: Theme.of(context).textTheme.labelSmall
       ),
     );
   }

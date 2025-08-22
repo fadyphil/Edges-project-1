@@ -39,7 +39,7 @@ class RecipeDetailsScreen extends StatelessWidget {
                     
                     // --- THE FIX IS HERE ---
                     
-                   _buildTabContent(currentTab, currentRecipe, userfactor),
+                   _buildTabContent(currentTab, currentRecipe, userfactor, context),
                     
                     SliverToBoxAdapter(child: Padding(
                       padding: const EdgeInsets.all(16),
@@ -57,11 +57,11 @@ class RecipeDetailsScreen extends StatelessWidget {
 
 
 
-Widget _buildTabContent(RecipeTab currentTab, Recipe currentRecipe, num userfactor) {
+Widget _buildTabContent(RecipeTab currentTab, Recipe currentRecipe, num userfactor,BuildContext context) {
   if (currentTab == RecipeTab.overview) {
     // Since buildOverviewSlivers returns a list, we need a parent sliver.
     return SliverMainAxisGroup(
-      slivers: buildOverviewSlivers(currentRecipe, userfactor),
+      slivers: buildOverviewSlivers(currentRecipe, userfactor, context),
     );
   } else {
     // The Steps tab already has a single parent sliver (SliverPadding).
@@ -89,33 +89,38 @@ Widget _buildTabContent(RecipeTab currentTab, Recipe currentRecipe, num userfact
       expandedHeight: MediaQuery.of(context).size.height * 0.4,
       bottom: PreferredSize(
         preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.4), 
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Column(
-              
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(recipe.name, style: GoogleFonts.hedvigLettersSerif(
-                  color: Colors.white, fontSize: 36, fontWeight: FontWeight.w400,
-                      )),
-              TagRowBuilder(recipe: recipe)
-              ],
-            ),
-            Container(
-              margin: EdgeInsets.only(bottom: 10),
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: tintColor,
-                borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16,0,16,0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Expanded(
+                child: Column(
+                  
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(recipe.name, 
+                      style: Theme.of(context).textTheme.displayLarge ,
+                      overflow: TextOverflow.fade,),
+                  TagRowBuilder(recipe: recipe)
+                  ],
+                ),
               ),
-              child: SvgPicture.asset('assets/images/${recipe.mealType.name.toLowerCase()}_base.svg',
-              width: 24,
-              height: 24
-              ))
-          ],
+              Container(
+                margin: EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: tintColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: SvgPicture.asset('assets/images/${recipe.mealType.name.toLowerCase()}_base.svg',
+                width: 24,
+                height: 24
+                ))
+            ],
+          ),
         )
       ),
       stretch: true,
@@ -202,11 +207,6 @@ Widget _buildTabContent(RecipeTab currentTab, Recipe currentRecipe, num userfact
   }
   
   // These helper methods return lists of Slivers to be added conditionally
-  
-
-  
-  
-  
 
   Widget _buildTabSelector(BuildContext context, RecipeTab selectedTab) {
     return Container(
