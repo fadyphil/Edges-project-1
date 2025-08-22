@@ -6,6 +6,7 @@ import 'package:mini_project_1/UI/screens/favourites_screen.dart';
 import 'package:mini_project_1/UI/screens/history_screen.dart';
 import 'package:mini_project_1/UI/screens/onboarding_screen.dart';
 import 'package:mini_project_1/UI/screens/recipe_details_screen.dart';
+import 'package:mini_project_1/UI/screens/recipe_done_screen.dart';
 import 'package:mini_project_1/UI/screens/step_timer_screen.dart';
 import 'package:mini_project_1/data/models/recipe_model.dart';
 
@@ -32,5 +33,6 @@ class AppRouter extends RootStackRouter{ // <-- NO "extends" YET!
        
         AutoRoute(path: '/recipe-details', page: RecipeDetailsRoute.page),
         AutoRoute(path: '/step-timer', page: StepTimerRoute.page),
+        AutoRoute(path: '/recipe-done', page: RecipeDoneRoute.page),
       ];
 }

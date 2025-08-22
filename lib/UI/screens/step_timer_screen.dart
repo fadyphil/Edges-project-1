@@ -12,6 +12,7 @@ import 'package:mini_project_1/blocs/step_timer/step_timer_state.dart';
 import 'package:mini_project_1/blocs/user/user_cubit.dart';
 import 'package:mini_project_1/data/models/enums.dart';
 import 'package:mini_project_1/data/models/recipe_model.dart';
+import 'package:mini_project_1/routes/app_router.dart';
 
 
 
@@ -28,13 +29,14 @@ class StepTimerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => StepTimerCubit(recipe: recipe, userfactor: context.read<UserCubit>().getUsersFactor()),
-      child: const _StepTimerView(),
+      child:  _StepTimerView(recipe),
     );
   }
 }
 
 class _StepTimerView extends StatelessWidget {
-  const _StepTimerView();
+  final Recipe recipe;
+  const _StepTimerView(this.recipe);
 
   @override
   Widget build(BuildContext context) {
@@ -86,10 +88,12 @@ class _StepTimerView extends StatelessWidget {
                     const SizedBox(height: 16),
                     _buildStartPauseButton(context, state),
                     const SizedBox(height: 16),
-                    _buildNextUpSection(),
+                     nextStep != null ? Text('Next Up', 
+                     style: Theme.of(context).textTheme.headlineMedium):
+                        SizedBox.shrink(),
                     const SizedBox(height: 16),
-                    // _buildStepCard(nextStep, state.currentStepIndex + 2, isCurrent: false),
-                    Stack(
+                    
+                    nextStep != null?Stack(
                       children: [
                       StepCard(
                         index: state.currentStepIndex+1, 
@@ -119,7 +123,7 @@ class _StepTimerView extends StatelessWidget {
                         ),
                         
                         ]
-                        ),
+                        ): SizedBox.shrink(),
                    
                     // _buildTimelineSection(recipe, state.overallProgress , userfactor),
                     TimelineBar(recipe: recipe, userfactor: userfactor),
@@ -129,16 +133,21 @@ class _StepTimerView extends StatelessWidget {
                     FloatingActionButton(
                       heroTag: 'done',
                       onPressed: (){
-                      context.read<StepTimerCubit>().completeStepAndMoveToNext();
+                      nextStep != null ? context.read<StepTimerCubit>().completeStepAndMoveToNext()
+                      : context.router.popAndPush(  RecipeDoneRoute(
+                        recipe: recipe,
+                        timeTaken: context.read<StepTimerCubit>().finalelapsedTime
+                      ));
+                     
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Done with this step ',
+                          nextStep != null ? 'Done with this step ':'Finish Recipe ',
                           style:Theme.of(context).textTheme.bodyMedium
                         ),
-                        Icon(Icons.check, color: Colors.white, size: 16)
+                        Icon( nextStep != null ? Icons.check : Icons.rocket_launch_outlined, color: Colors.white, size: 16)
                       ],
                     ),
                     ),
@@ -255,11 +264,6 @@ Widget _buildTimerDisplay(String elapsed, String total, Color timerColor) {
   );
 }
 
-  
-
-  Widget _buildNextUpSection() {
-    return Text('Next Up', style: GoogleFonts.lora(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w500));
-  }
 
 }
 

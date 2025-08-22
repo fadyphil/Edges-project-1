@@ -112,4 +112,9 @@ class StepTimerCubit extends Cubit<StepTimerState> {
     _timer?.cancel();
     return super.close();
   }
+
+
+
+  double get finalelapsedTime => state.totalElapsedTime.toDouble();
 }
+

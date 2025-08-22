@@ -73,7 +73,7 @@ class OnboardingPage3 extends StatelessWidget {
               hintText: 'Enter your name',
             ),
           ),
-          const Spacer(flex: 2),
+          
         ],
       ),
     );

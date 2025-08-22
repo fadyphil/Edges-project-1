@@ -138,6 +138,70 @@ class RecipeDetailsRouteArgs {
 }
 
 /// generated route for
+/// [RecipeDoneScreen]
+class RecipeDoneRoute extends PageRouteInfo<RecipeDoneRouteArgs> {
+  RecipeDoneRoute({
+    Key? key,
+    required Recipe recipe,
+    required double timeTaken,
+    List<PageRouteInfo>? children,
+  }) : super(
+         RecipeDoneRoute.name,
+         args: RecipeDoneRouteArgs(
+           key: key,
+           recipe: recipe,
+           timeTaken: timeTaken,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'RecipeDoneRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<RecipeDoneRouteArgs>();
+      return RecipeDoneScreen(
+        key: args.key,
+        recipe: args.recipe,
+        timeTaken: args.timeTaken,
+      );
+    },
+  );
+}
+
+class RecipeDoneRouteArgs {
+  const RecipeDoneRouteArgs({
+    this.key,
+    required this.recipe,
+    required this.timeTaken,
+  });
+
+  final Key? key;
+
+  final Recipe recipe;
+
+  final double timeTaken;
+
+  @override
+  String toString() {
+    return 'RecipeDoneRouteArgs{key: $key, recipe: $recipe, timeTaken: $timeTaken}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RecipeDoneRouteArgs) return false;
+    return key == other.key &&
+        recipe == other.recipe &&
+        timeTaken == other.timeTaken;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ recipe.hashCode ^ timeTaken.hashCode;
+}
+
+/// generated route for
 /// [StepTimerScreen]
 class StepTimerRoute extends PageRouteInfo<StepTimerRouteArgs> {
   StepTimerRoute({

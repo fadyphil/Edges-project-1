@@ -40,7 +40,12 @@ class TimelineBar extends StatelessWidget {
               ],
             ),
   
-            if (totalTime > 0) _buildTimelineBar(recipe, userfactor, prepColor, cookColor, prepPercentage),
+            Stack(
+              children: [
+                _buildTimelineBar(recipe, userfactor, prepColor, cookColor, prepPercentage),
+                // _buildIndictorStep(Colors.white)
+              ],
+            ),
            const SizedBox(height: 8),
           ],
         );
@@ -70,3 +75,16 @@ Widget _buildTimelineBar(Recipe recipe, num userfactor ,Color prepColor, Color c
       ),
     );
 }
+
+
+// Widget  _buildIndictorStep(Color timerColor){
+//   return Container(
+//     height: 30,
+//     width: 8,
+//     decoration: BoxDecoration(
+//       borderRadius: BorderRadius.circular(8),
+//       color: timerColor,
+//       shape: BoxShape.rectangle
+//     ),
+//   );
+// }
