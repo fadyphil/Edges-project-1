@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,6 +30,15 @@ class RecipeDetailsScreen extends StatelessWidget {
       create: (context) => RecipeDetailsCubit(recipe: recipe),
       child: SafeArea(
         child: Scaffold(
+          floatingActionButton: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+            child: _buildStartButton(context, recipe),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+
+
+
+         
           backgroundColor: const Color(0xFF0E1118),
           body: BlocBuilder<RecipeDetailsCubit, RecipeDetailsState>(
             builder: (context, state) {
@@ -40,11 +51,6 @@ class RecipeDetailsScreen extends StatelessWidget {
                     // --- THE FIX IS HERE ---
                     
                    _buildTabContent(currentTab, currentRecipe, userfactor, context),
-                    
-                    SliverToBoxAdapter(child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: _buildStartButton(context, recipe),
-                    ))
                   ],
                 ),
               );
@@ -80,9 +86,9 @@ Widget _buildTabContent(RecipeTab currentTab, Recipe currentRecipe, num userfact
   SliverAppBar _buildSliverAppBar(BuildContext context, Recipe recipe) {
     final Color tintColor ;
     if(recipe.mealType.name=='meat'){
-      tintColor=const Color(0xFFD76261).withOpacity(0.1);
+      tintColor=const Color(0xFFD76261).withValues(alpha: 0.1);
     }else{
-      tintColor  = const Color(0xFF4ABC96).withOpacity(0.1);
+      tintColor  = const Color(0xFF4ABC96).withValues(alpha: 0.1);
     }
     return SliverAppBar(
     
@@ -102,8 +108,8 @@ Widget _buildTabContent(RecipeTab currentTab, Recipe currentRecipe, num userfact
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(recipe.name, 
-                      style: Theme.of(context).textTheme.displayLarge ,
-                      overflow: TextOverflow.fade,),
+                      style: Theme.of(context).textTheme.displayLarge),
+                      const SizedBox(height: 8),
                   TagRowBuilder(recipe: recipe)
                   ],
                 ),
@@ -136,10 +142,11 @@ Widget _buildTabContent(RecipeTab currentTab, Recipe currentRecipe, num userfact
               gradient: LinearGradient(
                 colors: [
                     const Color(0xFF0E1118),
-                    const Color(0xFF0E1118).withOpacity(0.6),
+                    const Color(0xFF0E1118).withValues(alpha: 0.7),
                     Colors.transparent,
+                    const Color(0xFF0E1118).withValues(alpha: 0.9),
                   ],
-                  stops: const [0, 0.7, 1],
+                  stops: const [0, 0.3, 0.6,1],
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 )
@@ -149,16 +156,18 @@ Widget _buildTabContent(RecipeTab currentTab, Recipe currentRecipe, num userfact
             ),
       ),
       title: SafeArea(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildCircleIcon(context, Icons.arrow_back, Icons.arrow_back),
-            BlocSelector<FavouritedCubit, FavouritedState, bool>(
-              selector: (state) => state.favouritedRecipes.contains(recipe),
-             builder: (context, isFavourited) {
-              return _buildCircleIcon(context, Icons.favorite, isFavourited?Icons.favorite:Icons.favorite_border_outlined);
-            }),
-          ],
+        child: Wrap(
+          children:[ Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildCircleIcon(context, Icons.arrow_back, Icons.arrow_back),
+              BlocSelector<FavouritedCubit, FavouritedState, bool>(
+                selector: (state) => state.favouritedRecipes.contains(recipe),
+               builder: (context, isFavourited) {
+                return _buildCircleIcon(context, Icons.favorite, isFavourited?Icons.favorite:Icons.favorite_border_outlined);
+              }),
+            ],
+          ),]
         ),
       ),
       titleSpacing: 16.0,
@@ -173,18 +182,26 @@ Widget _buildTabContent(RecipeTab currentTab, Recipe currentRecipe, num userfact
         if(altIcon==Icons.favorite||altIcon==Icons.favorite_border_outlined) context.read<FavouritedCubit>().toggleFavourite(recipe);
       },
       
-      child: Container(
-      padding: const EdgeInsets.all(8),
-      // backgroundColor: const Color(0xFF2B2E33).withOpacity(0.1),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2B2E33).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12)
-      ),
-      child:
-          Icon(isfaved?altIcon:icon, 
-        color:icon==Icons.arrow_back?Colors.white:
-        (isfaved? Colors.redAccent:Colors.white) )
-
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10,),
+          
+          child: Container(
+          padding: const EdgeInsets.all(8),
+          // backgroundColor: const Color(0xFF2B2E33).withOpacity(0.1),
+          decoration: BoxDecoration(
+            color: const Color(0xFF2B2E33).withValues(alpha:  0.1),
+            borderRadius: BorderRadius.circular(12),
+            
+          ),
+          child:
+              Icon(isfaved?altIcon:icon, 
+            color:icon==Icons.arrow_back?Colors.white:
+            (isfaved? Colors.redAccent:Colors.white) )
+          
+          ),
+        ),
       ));
   }
 
@@ -264,7 +281,7 @@ Widget _buildStartButton (BuildContext context, Recipe recipe){
     child: Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFDB7A2B),
+        color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(14)
       ),
       child: Row(

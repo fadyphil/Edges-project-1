@@ -63,10 +63,10 @@ Widget  _buildHeaderRow (int index, String title, String time,StepType type,Buil
   Color color;
   Color textColor;
   if(type.name=='cooking'){
-    color= const Color(0xFFDB7A2B).withOpacity(0.2);
+    color= const Color(0xFFDB7A2B).withValues(alpha: 0.2);
     textColor  = const Color(0xFFDB7A2B);
   }else {
-     color= const Color(0xFF239D66).withOpacity(0.2);
+     color= const Color(0xFF239D66).withValues(alpha:  0.2);
      textColor= const Color(0xFF239D66);
   }
   return Row(

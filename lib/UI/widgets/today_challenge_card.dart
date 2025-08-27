@@ -38,8 +38,8 @@ class TodayChallengeCard extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: [
                     Theme.of(context).colorScheme.surface,
-                    Theme.of(context).colorScheme.surface.withOpacity(0.9),
-                    Theme.of(context).colorScheme.surface.withOpacity(0)
+                    Theme.of(context).colorScheme.surface.withValues(alpha: .9),
+                    Theme.of(context).colorScheme.surface.withValues(alpha:0 )
                   ],
                   stops: const [0.1, 0.3, 1],
                   begin: Alignment.centerLeft,

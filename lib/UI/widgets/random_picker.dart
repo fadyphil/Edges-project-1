@@ -64,7 +64,7 @@ class RandomPicker extends StatelessWidget {
 
                 // Check if the state is 'loaded' before accessing recipes
                 currentState.whenOrNull(
-                  loaded: (allRecipes, _, __) {
+                  loaded: (allRecipes, _, __, ___, ____) {
                     if (allRecipes.isNotEmpty) {
                       // Pick a random recipe
                       final random = Random();

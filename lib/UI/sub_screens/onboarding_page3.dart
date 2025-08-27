@@ -8,6 +8,7 @@ class OnboardingPage3 extends StatelessWidget {
   final Function(UserCookingLevel) onLevelSelected;
 
   const OnboardingPage3({
+    super.key,
     required this.nameController,
     required this.selectedLevel,
     required this.onLevelSelected,
@@ -88,19 +89,21 @@ class OnboardingPage3 extends StatelessWidget {
   }) {
     final bool isSelected = selectedLevel == level;
     final colorScheme = Theme.of(context).colorScheme;
+    final targetbordercolor = isSelected? colorScheme.primary.withValues(alpha:  0.3) : colorScheme.secondary.withValues(alpha:  0.5);
 
     return GestureDetector(
       onTap: () => onLevelSelected(level),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeInOut,
         margin: const EdgeInsets.symmetric(vertical: 6),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? colorScheme.primary.withOpacity(0.1) : Theme.of(context).cardColor,
+          color: isSelected ? colorScheme.primary.withValues(alpha:  0.1) : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? colorScheme.primary : colorScheme.secondary.withOpacity(0.5),
-            width: isSelected ? 2.0 : 1.0,
+            color: targetbordercolor,
+            width: 1
           ),
         ),
         child: Row(

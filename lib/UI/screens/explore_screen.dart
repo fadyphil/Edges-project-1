@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mini_project_1/UI/widgets/random_picker.dart';
 import 'package:mini_project_1/UI/widgets/recipe_card.dart';
+import 'package:mini_project_1/UI/widgets/recipe_grid_card.dart';
 import 'package:mini_project_1/UI/widgets/searchbarandviews.dart';
 import 'package:mini_project_1/UI/widgets/today_challenge_card.dart';
 import 'package:mini_project_1/blocs/explore/explore_cubit.dart';
@@ -25,7 +26,7 @@ class ExploreScreen extends StatelessWidget {
         builder: (context, state) {
           return state.when(
             initial: () => const Center(child: CircularProgressIndicator()),
-            loaded: (_, __, ___) {
+            loaded: (_, __, ___, ____, _____) {
               final username = context.watch<UserCubit>().state.user.name;
               
               // THE CORE CHANGE: We now use CustomScrollView instead of Column.
@@ -60,25 +61,27 @@ class ExploreScreen extends StatelessWidget {
 
                     // Selector for the Search and Filter Bar
                     SliverToBoxAdapter(
-                      child: BlocSelector<ExploreCubit, ExploreState, ExploreViewType>(
-                        selector: (state) => state.theViewType,
-                        builder: (context, currentViewType) {
+                      child:
+                     
                           
-                          return SearchAndFilterBar();
-                        },
-                      ),
+                           SearchAndFilterBar()
+                      
+                    
                     ),
 
                     // --- THE HIGHLY-PERFORMANT SLIVER LIST ---
                     // This selector now returns a SliverList or SliverGrid directly.
-                    BlocSelector<ExploreCubit, ExploreState, List<Recipe>>(
-                      selector: (state) => state.filteredRecipes,
-                      builder: (context, recipes) {
-                       
-                        // IMPORTANT: We no longer need Expanded. The sliver list manages its own space.
-                        return _buildRecipeListSliver(context, recipes);
+                    BlocBuilder<ExploreCubit, ExploreState>(
+                      buildWhen: (previous, current) {
+                        return previous.filteredRecipes != current.filteredRecipes
+                        || previous.theViewType!=current.theViewType;
                       },
-                    ),
+                      builder: (context,state){
+                        return state.theViewType==ExploreViewType.grid?
+                        _buildGridRceipes(context, state.filteredRecipes):
+                        _buildRecipeListSliver(context, state.filteredRecipes) ;
+                      }
+                      )
                   ],
                 ),
               );
@@ -235,3 +238,22 @@ Widget _buildGreeetingSentence(String greeting, String username, BuildContext co
     );
   }
 }
+
+
+
+Widget _buildGridRceipes (BuildContext context, List<Recipe> allRecipes){
+ return SliverGrid.builder(
+  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+    maxCrossAxisExtent: 280,
+    crossAxisSpacing:0,
+    mainAxisSpacing: 4,
+    mainAxisExtent: 220
+    ), 
+  itemCount: allRecipes.length,
+  itemBuilder: (BuildContext context, int index) { 
+     return RecipeGridCard(recipe: allRecipes[index]);
+   },
+  
+ );
+}
+

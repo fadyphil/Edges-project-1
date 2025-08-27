@@ -47,11 +47,11 @@ class RecipeCard extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors:  [
-                    Theme.of(context).colorScheme.surface,
-                    Theme.of(context).colorScheme.surface.withOpacity(0.7),
-                    Theme.of(context).colorScheme.surface.withOpacity(0.02)
+                    Theme.of(context).colorScheme.onSurface,
+                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
                   ] ,
-                  stops: const [0.02,0.15,1],
+                  stops: const [0.02,0.2,1],
                   begin: Alignment.centerRight,
                   end: Alignment.centerLeft,
                   )
@@ -74,11 +74,13 @@ class RecipeCard extends StatelessWidget {
                     Text(
                       recipe.name,
                       style: Theme.of(context).textTheme.titleMedium,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                     const SizedBox(height: 4),
                     // Dynamically build the tags
                     TagRowBuilder(recipe: recipe),
-                    const SizedBox(height: 22),
+                    const SizedBox(height: 18),
                     info_row_builder(recipe: recipe, userfactor: userfactor),
                   ],
                 ),
@@ -95,7 +97,7 @@ class RecipeCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     
                 children: [
-                 GestureDetector(
+                 InkWell(
                    onTap: () {
                      context.read<FavouritedCubit>().toggleFavourite(recipe);
                    },
@@ -105,7 +107,7 @@ class RecipeCard extends StatelessWidget {
                      decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Colors.grey.withOpacity(0.2),
+                        color: Colors.grey.withValues(alpha: 0.2),
                         width: 1,
                         style: BorderStyle.solid,
                       )
@@ -114,7 +116,7 @@ class RecipeCard extends StatelessWidget {
                      child:  Center(
                       child: Icon(
                         isFavorited ? Icons.favorite : Icons.favorite_border_rounded,
-                        color: isFavorited ? Colors.red : Colors.white70,
+                        color: isFavorited ? Colors.redAccent : Colors.white70,
                         size: 16,
                       ),
                      )
@@ -126,8 +128,8 @@ class RecipeCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       color: recipe.mealType.name=='meat'? 
-                      const Color(0xFFD76261).withOpacity(0.1):
-                      const Color(0xFF4ABC96).withOpacity(0.1)
+                      const Color(0xFFD76261).withValues(alpha: 0.1):
+                      const Color(0xFF4ABC96).withValues(alpha:  0.1)
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(4),

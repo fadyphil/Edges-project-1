@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mini_project_1/data/models/recipe_model.dart';
 
+// ignore: camel_case_types
 class info_row_builder extends StatelessWidget {
   const info_row_builder({
+    
     super.key,
     required this.recipe,
     required this.userfactor,

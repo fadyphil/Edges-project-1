@@ -19,12 +19,10 @@ final ThemeData appTheme = ThemeData.dark().copyWith(
   cardColor: kPrimarySurfaceColor,
   colorScheme: const ColorScheme.dark(
     primary: kPrimaryAccentColor,       // Big buttons, selected items
-    background: kMainBackgroundColor,   // Main screen background
-    surface: kPrimarySurfaceColor,      // Cards, AppBars, TextFields
+    surface: kMainBackgroundColor,      // Cards, AppBars, TextFields
     secondary: kSecondarySurfaceColor,    // Tags, borders, selected tabs
     onPrimary: Colors.white,            // Text on big buttons
-    onBackground: Colors.white,
-    onSurface: Colors.white,
+    onSurface: kPrimarySurfaceColor,
     onSecondary: Colors.white,
   ),
 

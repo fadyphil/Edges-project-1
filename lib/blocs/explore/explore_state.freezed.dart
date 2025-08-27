@@ -122,11 +122,11 @@ return loaded(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( List<Recipe> allRecipes,  String searchQuery,  ExploreViewType viewType)?  loaded,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( List<Recipe> allRecipes,  String searchQuery,  ExploreViewType viewType,  Set<String> selectedTags,  Set<String> allTags)?  loaded,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loaded() when loaded != null:
-return loaded(_that.allRecipes,_that.searchQuery,_that.viewType);case _:
+return loaded(_that.allRecipes,_that.searchQuery,_that.viewType,_that.selectedTags,_that.allTags);case _:
   return orElse();
 
 }
@@ -144,11 +144,11 @@ return loaded(_that.allRecipes,_that.searchQuery,_that.viewType);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( List<Recipe> allRecipes,  String searchQuery,  ExploreViewType viewType)  loaded,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( List<Recipe> allRecipes,  String searchQuery,  ExploreViewType viewType,  Set<String> selectedTags,  Set<String> allTags)  loaded,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loaded():
-return loaded(_that.allRecipes,_that.searchQuery,_that.viewType);case _:
+return loaded(_that.allRecipes,_that.searchQuery,_that.viewType,_that.selectedTags,_that.allTags);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -165,11 +165,11 @@ return loaded(_that.allRecipes,_that.searchQuery,_that.viewType);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( List<Recipe> allRecipes,  String searchQuery,  ExploreViewType viewType)?  loaded,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( List<Recipe> allRecipes,  String searchQuery,  ExploreViewType viewType,  Set<String> selectedTags,  Set<String> allTags)?  loaded,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loaded() when loaded != null:
-return loaded(_that.allRecipes,_that.searchQuery,_that.viewType);case _:
+return loaded(_that.allRecipes,_that.searchQuery,_that.viewType,_that.selectedTags,_that.allTags);case _:
   return null;
 
 }
@@ -213,7 +213,7 @@ String toString() {
 
 
 class _Loaded extends ExploreState {
-  const _Loaded({required final  List<Recipe> allRecipes, this.searchQuery = '', this.viewType = ExploreViewType.list}): _allRecipes = allRecipes,super._();
+  const _Loaded({required final  List<Recipe> allRecipes, this.searchQuery = '', this.viewType = ExploreViewType.list, final  Set<String> selectedTags = const {}, required final  Set<String> allTags}): _allRecipes = allRecipes,_selectedTags = selectedTags,_allTags = allTags,super._();
   
 
 /// The master list of all recipes from the data source.
@@ -229,6 +229,20 @@ class _Loaded extends ExploreState {
 @JsonKey() final  String searchQuery;
 /// The current view mode (list or grid). Defaults to list.
 @JsonKey() final  ExploreViewType viewType;
+ final  Set<String> _selectedTags;
+@JsonKey() Set<String> get selectedTags {
+  if (_selectedTags is EqualUnmodifiableSetView) return _selectedTags;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableSetView(_selectedTags);
+}
+
+ final  Set<String> _allTags;
+ Set<String> get allTags {
+  if (_allTags is EqualUnmodifiableSetView) return _allTags;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableSetView(_allTags);
+}
+
 
 /// Create a copy of ExploreState
 /// with the given fields replaced by the non-null parameter values.
@@ -240,16 +254,16 @@ _$LoadedCopyWith<_Loaded> get copyWith => __$LoadedCopyWithImpl<_Loaded>(this, _
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._allRecipes, _allRecipes)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.viewType, viewType) || other.viewType == viewType));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._allRecipes, _allRecipes)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.viewType, viewType) || other.viewType == viewType)&&const DeepCollectionEquality().equals(other._selectedTags, _selectedTags)&&const DeepCollectionEquality().equals(other._allTags, _allTags));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_allRecipes),searchQuery,viewType);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_allRecipes),searchQuery,viewType,const DeepCollectionEquality().hash(_selectedTags),const DeepCollectionEquality().hash(_allTags));
 
 @override
 String toString() {
-  return 'ExploreState.loaded(allRecipes: $allRecipes, searchQuery: $searchQuery, viewType: $viewType)';
+  return 'ExploreState.loaded(allRecipes: $allRecipes, searchQuery: $searchQuery, viewType: $viewType, selectedTags: $selectedTags, allTags: $allTags)';
 }
 
 
@@ -260,7 +274,7 @@ abstract mixin class _$LoadedCopyWith<$Res> implements $ExploreStateCopyWith<$Re
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) = __$LoadedCopyWithImpl;
 @useResult
 $Res call({
- List<Recipe> allRecipes, String searchQuery, ExploreViewType viewType
+ List<Recipe> allRecipes, String searchQuery, ExploreViewType viewType, Set<String> selectedTags, Set<String> allTags
 });
 
 
@@ -277,12 +291,14 @@ class __$LoadedCopyWithImpl<$Res>
 
 /// Create a copy of ExploreState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? allRecipes = null,Object? searchQuery = null,Object? viewType = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? allRecipes = null,Object? searchQuery = null,Object? viewType = null,Object? selectedTags = null,Object? allTags = null,}) {
   return _then(_Loaded(
 allRecipes: null == allRecipes ? _self._allRecipes : allRecipes // ignore: cast_nullable_to_non_nullable
 as List<Recipe>,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
 as String,viewType: null == viewType ? _self.viewType : viewType // ignore: cast_nullable_to_non_nullable
-as ExploreViewType,
+as ExploreViewType,selectedTags: null == selectedTags ? _self._selectedTags : selectedTags // ignore: cast_nullable_to_non_nullable
+as Set<String>,allTags: null == allTags ? _self._allTags : allTags // ignore: cast_nullable_to_non_nullable
+as Set<String>,
   ));
 }
 

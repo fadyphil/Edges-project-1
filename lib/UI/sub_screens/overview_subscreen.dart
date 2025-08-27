@@ -28,6 +28,7 @@ List<Widget> buildOverviewSlivers(Recipe recipe, num userfactor, BuildContext co
     SliverToBoxAdapter(
       child: _buildNutritionFacts(recipe, context),
     ),
+    SliverToBoxAdapter(child: const SizedBox(height: 80)),
   ];
 }
 
@@ -88,7 +89,7 @@ Widget _buildOverviewContent(Recipe recipe, num userfactor,BuildContext context)
         children: [
           Expanded(
               child: _buildInfoCard('difficulty', "Difficulty", recipe.difficulty.name, context,
-                  painter: _buildDifficultyDots(recipe.difficulty))),
+                  drawdots: _buildDifficultyDots(recipe.difficulty))),
           const SizedBox(width: 8),
           Expanded(child: _buildInfoCard('acceptance_margin', "Acceptance Margin", 
           '${recipe.acceptanceMarginInSeconds ~/ 60} Minutes', context)),
@@ -116,7 +117,7 @@ Widget _buildOverviewContent(Recipe recipe, num userfactor,BuildContext context)
   );
 }
 
-Widget _buildInfoCard(String icon, String title, String value, BuildContext context, {Widget? painter}) {
+Widget _buildInfoCard(String icon, String title, String value, BuildContext context, {Widget? drawdots}) {
   // Fix for Row issue
   return Container(
     padding: const EdgeInsets.fromLTRB(8, 8, 8, 8), // Added right padding
@@ -140,14 +141,15 @@ Widget _buildInfoCard(String icon, String title, String value, BuildContext cont
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                // Removed spacing, use SizedBox instead
+                // mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Text(title, style: Theme.of(context).textTheme.bodySmall,
-                    overflow: TextOverflow.ellipsis,maxLines: 1,),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,),
                   ),
                   const SizedBox(width: 4),
-                  if (painter != null) painter,
+                  if (drawdots != null) drawdots,
                 ],
               ),
               Text(value, 
@@ -213,7 +215,7 @@ Widget _buildNutritionFacts(Recipe recipe,BuildContext context) {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -268,11 +270,11 @@ Widget _buildStickSeparator() {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF2B2E33).withOpacity(0),
-            const Color(0xFF2B2E33).withOpacity(0.93),
-            const Color(0xFF2B2E33).withOpacity(1),
-            const Color(0xFF2B2E33).withOpacity(0.93),
-            const Color(0xFF2B2E33).withOpacity(0),
+            const Color(0xFF2B2E33).withValues(alpha: 0),
+            const Color(0xFF2B2E33).withValues(alpha:  0.93),
+            const Color(0xFF2B2E33).withValues(alpha: 1),
+            const Color(0xFF2B2E33).withValues(alpha: 0.93),
+            const Color(0xFF2B2E33).withValues(alpha: 0),
           ],
           stops: const [0.0, 0.2, 0.5, 0.8, 1.0],
           begin: Alignment.topCenter,

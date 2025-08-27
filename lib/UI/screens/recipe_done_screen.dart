@@ -13,16 +13,17 @@ class RecipeDoneScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Recipe Done'),
+      appBar: AppBar(title: const Text('Recipe Done', 
+        style: TextStyle(color: Colors.white),),
       leading: IconButton(
         onPressed: (){
           context.router.popUntilRoot();
           context.router.navigate(HistoryRoute());
         }, 
-        icon: Icon(Icons.arrow_back)),),
+        icon: Icon(Icons.arrow_back, color: Colors.white,))),
       body: Center(
         child: Text(
-          'Recipe Done! in ${(timeTaken/60).toStringAsPrecision(2)} minutes. ',
+          'Recipe Done! in about ${(timeTaken/60).toInt()} minutes. ',
           style: Theme.of(context).textTheme.headlineLarge,
         ),
       ),

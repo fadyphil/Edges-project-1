@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mini_project_1/UI/widgets/filterbottomsheet.dart';
 import 'package:mini_project_1/blocs/explore/explore_cubit.dart';
 import 'package:mini_project_1/blocs/explore/explore_state.dart';
 
@@ -34,13 +35,20 @@ class SearchAndFilterBar extends StatelessWidget {
                   color:Color(0xFF888481),
                   size: 16,
                   ),
-                
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 1.0,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF2B2E33),
+                    width: 1,
                   ),
-                  borderRadius: BorderRadius.circular(14),
                 ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    width: 0.5,
+                  )
+                )
               ),
             ),
           ),
@@ -54,7 +62,14 @@ class SearchAndFilterBar extends StatelessWidget {
           // --- Filter Button ---
           IconButton(
             onPressed: () {
-              // TODO: Implement filter logic (e.g., show a bottom sheet)
+              showModalBottomSheet(
+                context: context, 
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context){
+                  return FilterBottomSheet();
+                }
+                );
             },
             icon: const Icon(Icons.filter_list, color: Colors.white),
             style: IconButton.styleFrom(
@@ -73,9 +88,11 @@ class SearchAndFilterBar extends StatelessWidget {
   // Helper widget for the Grid/List view toggle
   Widget _buildViewToggleButton(BuildContext context, ExploreViewType currentViewType) {
     return Container(
+      
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).colorScheme.onSurface,
         borderRadius: BorderRadius.circular(12),
+
       ),
       child: Row(
         children: [
@@ -120,7 +137,7 @@ class SearchAndFilterBar extends StatelessWidget {
   // Styles for the toggle buttons
   ButtonStyle _selectedToggleStyle() {
     return IconButton.styleFrom(
-      backgroundColor: Colors.white.withOpacity(0.2),
+      backgroundColor: Colors.white.withValues(alpha: 0.2),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     );
   }

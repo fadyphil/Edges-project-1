@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class OnboardingPage2 extends StatelessWidget {
-  const OnboardingPage2();
+  const OnboardingPage2({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -59,14 +59,14 @@ class OnboardingPage2 extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).colorScheme.secondary.withOpacity(0.5)),
+        border: Border.all(color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha:  0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 28)),

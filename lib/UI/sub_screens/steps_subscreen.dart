@@ -17,6 +17,7 @@ List<Widget> buildTimelineAndStepsSlivers(Recipe recipe, num userfactor) {
      SliverToBoxAdapter(child: const SizedBox(height: 16)),
     // 2. The sliver list containing all the steps.
     _buildStepsSlivers(recipe, userfactor),
+    SliverToBoxAdapter(child: const SizedBox(height: 70)),
     
   ];
 }
@@ -46,10 +47,10 @@ Widget  buildStepType(String type, {num? extranumber}){
   Color color;
   Color textColor;
   if(type=='cooking'){
-    color= const Color(0xFFDB7A2B).withOpacity(0.2);
+    color= const Color(0xFFDB7A2B).withValues(alpha:  0.2);
     textColor  = const Color(0xFFDB7A2B);
   }else {
-     color= const Color(0xFF239D66).withOpacity(0.2);
+     color= const Color(0xFF239D66).withValues(alpha:  0.2);
      textColor= const Color(0xFF239D66);
   }
   return Container(

@@ -157,8 +157,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: ElevatedButton(
           onPressed: _onButtonPressed,
           style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
-                padding: MaterialStateProperty.all(const EdgeInsets.all(16)),
-                // maximumSize: MaterialStateProperty.all(Size(0.5, 0.5)),
+                padding: WidgetStateProperty.all(const EdgeInsets.all(16)),
               ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

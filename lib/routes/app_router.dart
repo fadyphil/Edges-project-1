@@ -31,7 +31,7 @@ class AppRouter extends RootStackRouter{ // <-- NO "extends" YET!
           ],
         ),
        
-        AutoRoute(path: '/recipe-details', page: RecipeDetailsRoute.page),
+        AutoRoute(path: '/recipe-details', page: RecipeDetailsRoute.page,),
         AutoRoute(path: '/step-timer', page: StepTimerRoute.page),
         AutoRoute(path: '/recipe-done', page: RecipeDoneRoute.page),
       ];

@@ -9,7 +9,7 @@ class HistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('History'),
+        title: const Text('History', style: TextStyle(color: Colors.white),),
         centerTitle: true,
       ),
       body: const Center(

@@ -26,6 +26,9 @@ abstract class ExploreState with _$ExploreState {
     
     /// The current view mode (list or grid). Defaults to list.
     @Default(ExploreViewType.list) ExploreViewType viewType,
+
+    @Default({}) final Set<String> selectedTags,
+    required final Set<String> allTags,
     
   }) = _Loaded;
 
@@ -40,7 +43,7 @@ abstract class ExploreState with _$ExploreState {
       // --- FIX #1: The initial state has no recipes, so return null. ---
       initial: () => null,
       
-      loaded: (allRecipes, _, __) {
+      loaded: (allRecipes, _, __, ___, ____) {
         // Guard clause for an empty recipe list to prevent crashes.
         if (allRecipes.isEmpty) {
           return null;
@@ -55,24 +58,36 @@ abstract class ExploreState with _$ExploreState {
   }
 
 
-  List<Recipe> get filteredRecipes {
-    // Your original `map` was correct here, but `when` is often more readable.
+   List<Recipe> get filteredRecipes {
     return when(
       initial: () => [],
-      loaded: (allRecipes, searchQuery, _) {
-        if (searchQuery.isEmpty) {
-          return allRecipes;
+      loaded: (allRecipes, searchQuery, _, selectedTags,_) {
+        // Start with a copy of all recipes
+        List<Recipe> filtered = List.from(allRecipes);
+
+        // 1. Filter by search query
+        if (searchQuery.isNotEmpty) {
+          filtered = filtered.where((recipe) {
+            return recipe.name.toLowerCase().contains(searchQuery.toLowerCase());
+          }).toList();
         }
-        return allRecipes.where((recipe) {
-          return recipe.name.toLowerCase().contains(searchQuery.toLowerCase());
-        }).toList();
+
+        // 2. Filter by selected tags
+        if (selectedTags.isNotEmpty) {
+          filtered = filtered.where((recipe) {
+            // A recipe is kept if its tags contain ALL of the selected tags.
+            return selectedTags.every((tag) => recipe.tags.contains(tag));
+          }).toList();
+        }
+
+        return filtered;
       },
     );
   }
 
   ExploreViewType get theViewType {
     return  maybeWhen(
-      loaded: (_,_,viewType) => viewType,
+      loaded: (_,_,viewType,_,_) => viewType,
       orElse: ()=> ExploreViewType.list,
     );
   }

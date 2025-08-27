@@ -63,7 +63,7 @@ class _StepTimerView extends StatelessWidget {
                 centerTitle: true,
                 leading: IconButton(
                   onPressed: () => context.router.pop(),
-                  icon: const Icon(Icons.arrow_back,),
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
                 ),
               ),
               SliverPadding(
@@ -77,16 +77,22 @@ class _StepTimerView extends StatelessWidget {
                     StepCard(index:state.currentStepIndex,step:  currentStep, userfactor: userfactor, isCurrent: true),
                     const SizedBox(height: 16),
                     SvgPicture.asset('assets/images/separator.svg'),
-                    _buildTimerDisplay(
-                      _formatDuration(state.elapsedSecondsInStep),
-                      _formatDuration((currentStep.baseTimeInSeconds*userfactor).toInt()),
+                    const SizedBox(height: 8,),
+                    _buildTimer(
+                       _formatDuration(state.elapsedSecondsInStep),
+                     _formatDuration((currentStep.baseTimeInSeconds*userfactor).toInt()),
                       _getTimerColor(state.timerColor),
-                    ),
+                      context
+                      ),
+                      const SizedBox(height: 8),
                     
                     // _buildControlButtons(context, state),
                     SvgPicture.asset('assets/images/separator.svg'),
                     const SizedBox(height: 16),
-                    _buildStartPauseButton(context, state),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 200),
+                      child: _buildStartPauseButton(context, state)
+                      ),
                     const SizedBox(height: 16),
                      nextStep != null ? Text('Next Up', 
                      style: Theme.of(context).textTheme.headlineMedium):
@@ -105,9 +111,9 @@ class _StepTimerView extends StatelessWidget {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                Theme.of(context).colorScheme.background,
-                                Theme.of(context).colorScheme.background.withOpacity(0.9),
-                                Theme.of(context).colorScheme.background.withOpacity(0.35),
+                                Theme.of(context).colorScheme.surface,
+                                Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
+                                Theme.of(context).colorScheme.surface.withValues(alpha:  0.35),
                               ],
                               stops: const [0.48, 0.5, 1],
                               begin: Alignment.bottomCenter,
@@ -126,7 +132,12 @@ class _StepTimerView extends StatelessWidget {
                         ): SizedBox.shrink(),
                    
                     // _buildTimelineSection(recipe, state.overallProgress , userfactor),
-                    TimelineBar(recipe: recipe, userfactor: userfactor),
+                    TimelineBar(recipe: recipe, 
+                    userfactor: userfactor,
+                    elapsedSecondsInStep:context.watch<StepTimerCubit>().finalelapsedTime.toInt(),
+                    currentStepIndex: state.currentStepIndex,
+                    timerColor: _getTimerColor(state.timerColor),
+                    ),
                     
                     const SizedBox(height: 20),
 
@@ -223,55 +234,13 @@ TextSpan _buildFractionText(
       fontWeight: weight ?? FontWeight.w400, // A default weight
     ),
   );
-}
-
-
-Widget _buildTimerDisplay(String elapsed, String total, Color timerColor) {
-  const double baseFontSize = 70; // Set the base font size for the timer
-
-  return RichText(
-    textAlign: TextAlign.center,
-    text: TextSpan(
-      // No default style is needed here, as each child is explicitly styled.
-      children: <TextSpan>[
-        // The elapsed time, styled as a numerator
-        _buildFractionText(
-          elapsed,
-          feature: const FontFeature.numerators(),
-          color: timerColor, // The dynamic color for the current time
-          size: baseFontSize,
-          weight: FontWeight.w300,
-        ),
-        
-        // The slash, styled neutrally
-        _buildFractionText(
-          '/',
-          color: Colors.grey.shade700,
-          size: baseFontSize,
-  
-        ),
-
-        // The total time, styled as a denominator
-        _buildFractionText(
-          total,
-          feature: const FontFeature.denominator(),
-          color: Colors.grey.shade600,
-          size: baseFontSize,
-          weight: FontWeight.w300,
-        ),
-      ],
-    ),
-  );
-}
-
-
+  }
 }
 
 Widget _buildStartPauseButton(BuildContext context, StepTimerState state){
-  return FloatingActionButton.extended(
-            backgroundColor: const Color(0xFFDB7A2B),
-            
-            
+  return IconButton(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+  
             onPressed: state.status == TimerStatus.finished ? null : () {
               if (state.status == TimerStatus.running) {
                 context.read<StepTimerCubit>().pauseTimer();
@@ -279,7 +248,7 @@ Widget _buildStartPauseButton(BuildContext context, StepTimerState state){
                 context.read<StepTimerCubit>().startTimer();
               }
             },
-            label:Icon(
+            icon:Icon(
               
               state.status == TimerStatus.running ? Icons.pause : Icons.play_arrow,
               color: Colors.white,
@@ -296,7 +265,7 @@ String _formatDuration(int totalSeconds) {
     final duration = Duration(seconds: totalSeconds.abs());
     final minutes = duration.inMinutes.remainder(60);
     final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return '-$minutes:$seconds';
+    return '-$minutes : $seconds';
   }
   final duration = Duration(seconds: totalSeconds);
   final minutes = duration.inMinutes.remainder(60);
@@ -310,4 +279,31 @@ Color _getTimerColor(TimerColorStatus status) {
     case TimerColorStatus.acceptanceMargin: return Colors.orange;
     case TimerColorStatus.overtime: return Colors.red;
   }
+}
+
+Widget _buildTimer (String elapsed, String total, Color timerColor, BuildContext  context) {
+  const double basesize =50;
+  return Wrap(
+    alignment: WrapAlignment.center,
+    spacing: 8,
+    children: [
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(elapsed, style: Theme.of(context).textTheme.displayLarge!.copyWith(fontSize: basesize,color: timerColor))
+        ],
+      ),
+      Column(
+        children: [
+          Text('/',style :Theme.of(context).textTheme.displayLarge!.copyWith(fontSize: basesize+20, color: Colors.grey))
+        ],
+      ),
+      Column(
+        children: [
+          const SizedBox(height: 30,),
+          Text(total, style: Theme.of(context).textTheme.displayLarge!.copyWith(fontSize: basesize, color: Colors.grey))
+        ],
+      )
+    ],
+  ) ;
 }

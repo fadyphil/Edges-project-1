@@ -12,11 +12,12 @@ class TagRowBuilder extends StatelessWidget {
 }
  Widget _buildTagsRow(List<String> tags,BuildContext context) {
     final tagsToShow = tags.take(3).toList();
-    return Wrap(
-      
-      runSpacing: 4,
-      children:
-        tagsToShow.map((tag) => _buildTag(tag, context)).toList(),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child:Row(
+        children: tagsToShow.map((tag) => _buildTag(tag, context)).toList(),
+      )
       
     );
   }
