@@ -14,18 +14,26 @@ class FavouritesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
         return Scaffold(
+          
         appBar: AppBar(
-          title:  Text('Favourites', 
-            style:Theme.of(context).textTheme.headlineSmall ),
-          centerTitle: true,
-          elevation: 5,
+        title:  Text(
+            'Favourites', 
+            style:Theme.of(context).textTheme.headlineSmall 
+            ),
+        centerTitle: true,
+        elevation: 5,
         ),
+
         body: BlocSelector<FavouritedCubit, FavouritedState, Set<Recipe>>(
           selector: (state) => state.favouritedRecipes,
           builder: (context, favedSet) {
             if (favedSet.isEmpty){
-              return  Center(child: Text('No favourites yet.', 
-              style: Theme.of(context).textTheme.bodyMedium));
+              return  Center(
+                child: Text(
+                  'No favourites yet.', 
+                  style: Theme.of(context).textTheme.bodyMedium
+                  )
+                  );
             }
             return ListView.builder(
             itemCount: favedSet.length,

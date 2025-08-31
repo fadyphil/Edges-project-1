@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mini_project_1/blocs/user/user_cubit.dart';
 import 'package:mini_project_1/data/models/recipe_model.dart';
 
-// ignore: camel_case_types
-class info_row_builder extends StatelessWidget {
-  const info_row_builder({
+class InfoRowBuilder extends StatelessWidget {
+  const InfoRowBuilder({
     
     super.key,
     required this.recipe,
-    required this.userfactor,
   });
 
   final Recipe recipe;
-  final double userfactor;
 
   @override
   Widget build(BuildContext context) {
+    final  userfactor = context.watch<UserCubit>().getUsersFactor();
     return Wrap(
       
       crossAxisAlignment: WrapCrossAlignment.center,

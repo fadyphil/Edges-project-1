@@ -1,18 +1,32 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mini_project_1/UI/widgets/filterbottomsheet.dart';
 import 'package:mini_project_1/blocs/explore/explore_cubit.dart';
 import 'package:mini_project_1/blocs/explore/explore_state.dart';
 
-class SearchAndFilterBar extends StatelessWidget {
+class SearchAndFilterBar extends StatefulWidget {
   const SearchAndFilterBar({super.key});
 
   @override
+  State<SearchAndFilterBar> createState() => _SearchAndFilterBarState();
+}
+
+class _SearchAndFilterBarState extends State<SearchAndFilterBar> {
+
+  Timer? _debounce;
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    // We watch the ExploreCubit to get the current view type
-    final currentViewType = context.watch<ExploreCubit>().state.mapOrNull(
-      loaded: (state) => state.viewType,
-    ) ?? ExploreViewType.list; // Default to list if not loaded
+
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
@@ -23,8 +37,14 @@ class SearchAndFilterBar extends StatelessWidget {
             child: TextField(
               
               onChanged: (query) {
-                // Call the function on the cubit to update the search query
-                context.read<ExploreCubit>().searchChanged(query);
+
+                if (_debounce?.isActive ?? false) _debounce!.cancel();
+                _debounce = Timer(const Duration(milliseconds: 300),
+                  (){
+                    context.read<ExploreCubit>().searchChanged(query);
+                  }
+                );
+                
               },
               
               decoration: InputDecoration(
@@ -55,7 +75,10 @@ class SearchAndFilterBar extends StatelessWidget {
           const SizedBox(width: 4),
 
           // --- View Toggle Buttons ---
-          _buildViewToggleButton(context, currentViewType),
+          ViewToggleButtons(
+            selectedToggleStyle: _selectedToggleStyle, 
+            unselectedToggleStyle: _unselectedToggleStyle, 
+            ),
 
           const SizedBox(width: 4),
 
@@ -67,7 +90,7 @@ class SearchAndFilterBar extends StatelessWidget {
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
                 builder: (context){
-                  return FilterBottomSheet();
+                  return const FilterBottomSheet();
                 }
                 );
             },
@@ -75,7 +98,7 @@ class SearchAndFilterBar extends StatelessWidget {
             style: IconButton.styleFrom(
               backgroundColor: const Color(0xFF181B21),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius:  BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.all(12),
             ),
@@ -86,7 +109,36 @@ class SearchAndFilterBar extends StatelessWidget {
   }
 
   // Helper widget for the Grid/List view toggle
-  Widget _buildViewToggleButton(BuildContext context, ExploreViewType currentViewType) {
+  ButtonStyle get _selectedToggleStyle {
+    return IconButton.styleFrom(
+      backgroundColor: Colors.white.withValues(alpha: 0.2),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    );
+  }
+
+  ButtonStyle get _unselectedToggleStyle {
+    return IconButton.styleFrom(
+      backgroundColor: Colors.transparent,
+    );
+  }
+}
+
+class ViewToggleButtons extends StatelessWidget {
+  const ViewToggleButtons({
+    super.key,
+    required ButtonStyle selectedToggleStyle,
+    required ButtonStyle unselectedToggleStyle,
+  }) : _selectedToggleStyle = selectedToggleStyle, _unselectedToggleStyle = unselectedToggleStyle;
+
+  final ButtonStyle _selectedToggleStyle;
+  final ButtonStyle _unselectedToggleStyle;
+
+  @override
+  Widget build(BuildContext context) {
+        final currentViewType = context.watch<ExploreCubit>().state.mapOrNull(
+      loaded: (state) => state.viewType,
+    ) ?? ExploreViewType.list; 
+
     return Container(
       
       decoration: BoxDecoration(
@@ -110,8 +162,8 @@ class SearchAndFilterBar extends StatelessWidget {
               color: currentViewType == ExploreViewType.grid ? Colors.white : Colors.white54,
             ),
             style: currentViewType == ExploreViewType.grid
-                ? _selectedToggleStyle()
-                : _unselectedToggleStyle(),
+                ? _selectedToggleStyle
+                : _unselectedToggleStyle,
           ),
           // List View Button
           IconButton(
@@ -126,25 +178,11 @@ class SearchAndFilterBar extends StatelessWidget {
               color: currentViewType == ExploreViewType.list ? Colors.white : Colors.white54,
             ),
             style: currentViewType == ExploreViewType.list
-                ? _selectedToggleStyle()
-                : _unselectedToggleStyle(),
+                ? _selectedToggleStyle
+                : _unselectedToggleStyle,
           ),
         ],
       ),
-    );
-  }
-
-  // Styles for the toggle buttons
-  ButtonStyle _selectedToggleStyle() {
-    return IconButton.styleFrom(
-      backgroundColor: Colors.white.withValues(alpha: 0.2),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-    );
-  }
-
-  ButtonStyle _unselectedToggleStyle() {
-    return IconButton.styleFrom(
-      backgroundColor: Colors.transparent,
     );
   }
 }

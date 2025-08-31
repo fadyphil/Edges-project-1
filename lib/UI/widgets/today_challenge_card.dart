@@ -1,9 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mini_project_1/UI/widgets/info_row_builder.dart';
 import 'package:mini_project_1/UI/widgets/tag_row_builder.dart';
-import 'package:mini_project_1/blocs/user/user_cubit.dart';
 import 'package:mini_project_1/data/models/models.dart';
 import 'package:mini_project_1/routes/app_router.dart';
 
@@ -16,7 +14,6 @@ class TodayChallengeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userfactor = context.watch<UserCubit>().getUsersFactor();
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18),),
@@ -90,7 +87,7 @@ class TodayChallengeCard extends StatelessWidget {
                 const SizedBox(height: 14),
       
                 // Info (Time and Steps)
-                info_row_builder(recipe: recipe, userfactor: userfactor),
+                InfoRowBuilder(recipe: recipe),
                 const SizedBox(height: 35),
       
                 // Start Button

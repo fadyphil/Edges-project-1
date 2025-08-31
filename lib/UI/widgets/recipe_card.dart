@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mini_project_1/UI/widgets/info_row_builder.dart';
 import 'package:mini_project_1/UI/widgets/tag_row_builder.dart';
-import 'package:mini_project_1/blocs/user/user_cubit.dart';
 import 'package:mini_project_1/data/models/models.dart';
 import 'package:mini_project_1/blocs/favourited/favourited_cubit.dart';
 import 'package:mini_project_1/routes/app_router.dart';
@@ -19,11 +18,6 @@ class RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use context.watch to listen for changes in the favorites state.
-    // This will cause the card to rebuild when a recipe is favorited/unfavorited.
-    final isFavorited = context.watch<FavouritedCubit>().state.favouritedRecipes.contains(recipe);
- 
-    final userfactor = context.watch<UserCubit>().getUsersFactor();
 
 
     return GestureDetector(
@@ -81,7 +75,7 @@ class RecipeCard extends StatelessWidget {
                     // Dynamically build the tags
                     TagRowBuilder(recipe: recipe),
                     const SizedBox(height: 18),
-                    info_row_builder(recipe: recipe, userfactor: userfactor),
+                    InfoRowBuilder(recipe: recipe),
                   ],
                 ),
               ),
@@ -97,31 +91,8 @@ class RecipeCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     
                 children: [
-                 InkWell(
-                   onTap: () {
-                     context.read<FavouritedCubit>().toggleFavourite(recipe);
-                   },
-                   child: Container(
-                    padding: const EdgeInsets.all(4),
-                    //  margin: EdgeInsets.only(bottom: 15),
-                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: Colors.grey.withValues(alpha: 0.2),
-                        width: 1,
-                        style: BorderStyle.solid,
-                      )
-                   
-                     ),
-                     child:  Center(
-                      child: Icon(
-                        isFavorited ? Icons.favorite : Icons.favorite_border_rounded,
-                        color: isFavorited ? Colors.redAccent : Colors.white70,
-                        size: 16,
-                      ),
-                     )
-                   ),
-                 ),
+
+                  FavouriteButton(recipe: recipe),
                 
                   Container(
                     
@@ -147,5 +118,47 @@ class RecipeCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+
+class FavouriteButton extends StatelessWidget {
+  const FavouriteButton({
+    super.key, 
+    required this.recipe
+    });
+
+  final Recipe recipe;
+  
+
+  @override
+  Widget build(BuildContext context) {
+    final isFavorited = context.watch<FavouritedCubit>().state.favouritedRecipes.contains(recipe);
+ 
+    return InkWell(
+            onTap: () {
+              context.read<FavouritedCubit>().toggleFavourite(recipe);
+                },
+            child: Container(
+                    padding: const EdgeInsets.all(4),
+                    //  margin: EdgeInsets.only(bottom: 15),
+                     decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Colors.grey.withValues(alpha: 0.2),
+                        width: 1,
+                        style: BorderStyle.solid,
+                      )
+                   
+                     ),
+                     child:  Center(
+                      child: Icon(
+                        isFavorited ? Icons.favorite : Icons.favorite_border_rounded,
+                        color: isFavorited ? Colors.redAccent : Colors.white70,
+                        size: 16,
+                      ),
+                     )
+                   ),
+                 ) ;
   }
 }

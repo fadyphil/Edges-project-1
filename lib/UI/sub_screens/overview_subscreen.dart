@@ -1,19 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mini_project_1/blocs/user/user_cubit.dart';
 import 'package:mini_project_1/data/models/enums.dart';
 import 'package:mini_project_1/data/models/recipe_model.dart';
 
+class OverViewSubScreen extends StatelessWidget {
 
-List<Widget> buildOverviewSlivers(Recipe recipe, num userfactor, BuildContext context) {
-  return [
+  const OverViewSubScreen({
+    super.key, 
+    required this.recipe, 
+
+    });
+
+  final Recipe recipe;
+
+
+  @override
+  Widget build(BuildContext context) {
+      return SliverMainAxisGroup(
+      slivers: [
     SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: _buildOverviewContent(recipe, userfactor, context),
+        child: OverViewContent(
+          recipe:recipe, 
+          ),
       ),
     ),
-    _buildIngredientsList(recipe),
+    IngredientsSliverList(recipe:recipe),
     SliverToBoxAdapter(child: const SizedBox(height: 16)),
     SliverToBoxAdapter(child: SvgPicture.asset('assets/images/separator.svg')),
     SliverToBoxAdapter(
@@ -26,18 +42,28 @@ List<Widget> buildOverviewSlivers(Recipe recipe, num userfactor, BuildContext co
       ),
     ),
     SliverToBoxAdapter(
-      child: _buildNutritionFacts(recipe, context),
+      child: NutritionFacts(
+        recipe: recipe
+        ),
     ),
     SliverToBoxAdapter(child: const SizedBox(height: 80)),
-  ];
+    ]
+  );
+  }
 }
 
-// All helper functions below remain the same, but they are now
-// private helper functions for the public `buildOverviewSlivers` function above.
+class IngredientsSliverList extends StatelessWidget {
 
-SliverList _buildIngredientsList(Recipe recipe) {
-  // ... (no changes needed here)
-  return SliverList.separated(
+  const IngredientsSliverList({
+    super.key, 
+    required this.recipe
+    });
+
+  final Recipe recipe;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverList.separated(
     itemCount: recipe.ingredients.length,
     itemBuilder: (context, index) {
       return Padding(
@@ -52,7 +78,7 @@ SliverList _buildIngredientsList(Recipe recipe) {
                   recipe.ingredients[index].quantity.toInt().toString(),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
-                SizedBox(width: 4),
+                const SizedBox(width: 4),
                 Text(
                   recipe.ingredients[index].unit.name[0].toUpperCase() + recipe.ingredients[index].unit.name.substring(1),
                   style: Theme.of(context).textTheme.bodySmall,
@@ -67,40 +93,90 @@ SliverList _buildIngredientsList(Recipe recipe) {
     },
     separatorBuilder: (context, index) => const SizedBox(height: 8),
   );
+  }
 }
 
-Widget _buildOverviewContent(Recipe recipe, num userfactor,BuildContext context) {
-  // ... (no changes needed here, just ensure Row's `children` don't have spacing issues)
-  return Column(
+class OverViewContent extends StatelessWidget {
+
+  const OverViewContent({
+    super.key, 
+    required this.recipe, 
+    });
+
+  final Recipe recipe;
+
+
+  @override
+  Widget build(BuildContext context) {
+    final userfactor = context.watch<UserCubit>().getUsersFactor();
+    return Column(
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
       const SizedBox(height: 16),
       Row(
         children: [
-          Expanded(child: _buildInfoCard('timer', "Total time", 
-          '${(recipe.totalBaseTimeInSeconds / 60 * userfactor).ceil()} Minutes', context)),
-          const SizedBox(width: 8),
-          Expanded(child: _buildInfoCard('steps', "Steps", 
-          '${recipe.stepCount} Steps', context)),
-        ],
-      ),
-      const SizedBox(height: 8),
-      Row(
-        children: [
+
           Expanded(
-              child: _buildInfoCard('difficulty', "Difficulty", recipe.difficulty.name, context,
-                  drawdots: _buildDifficultyDots(recipe.difficulty))),
+            child: InfoCard(
+              icon: 'timer',
+              title: "Total time", 
+              value: '${(recipe.totalBaseTimeInSeconds / 60 * userfactor).ceil()} Minutes'
+             )
+           ),
+
           const SizedBox(width: 8),
-          Expanded(child: _buildInfoCard('acceptance_margin', "Acceptance Margin", 
-          '${recipe.acceptanceMarginInSeconds ~/ 60} Minutes', context)),
+
+          Expanded(
+            child: InfoCard(
+              icon:'steps', 
+              title: "Steps", 
+              value: '${recipe.stepCount} Steps'
+                )
+              ),
         ],
       ),
+
+      const SizedBox(height: 8),
+
+      Row(
+
+        children: [
+
+          Expanded(
+              child: InfoCard(
+                icon:'difficulty', 
+                title: "Difficulty", 
+                value: recipe.difficulty.name,
+                drawdots: DifficultyDots(
+                  difficulty: recipe.difficulty
+                      )
+                    )
+                  ),
+
+          const SizedBox(width: 8),
+
+          Expanded(
+            child: InfoCard(
+              icon:'acceptance_margin', 
+              title: "Acceptance Margin", 
+              value: '${recipe.acceptanceMarginInSeconds ~/ 60} Minutes'
+                  )
+                ),
+          ],
+        ),
+
       const SizedBox(height: 16),
+
       SvgPicture.asset('assets/images/separator.svg'),
+
       const SizedBox(height: 16),
-      Text(
-        "\" ${recipe.description}",
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontStyle: FontStyle.italic),
+
+      Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          "\" ${recipe.description}",
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontStyle: FontStyle.italic),
+        ),
       ),
       const SizedBox(height: 16),
       SvgPicture.asset('assets/images/separator.svg'),
@@ -115,11 +191,28 @@ Widget _buildOverviewContent(Recipe recipe, num userfactor,BuildContext context)
       const SizedBox(height: 16),
     ],
   );
+  }
 }
 
-Widget _buildInfoCard(String icon, String title, String value, BuildContext context, {Widget? drawdots}) {
-  // Fix for Row issue
-  return Container(
+class InfoCard extends StatelessWidget {
+
+  const InfoCard({
+    super.key, 
+    required this.icon, 
+    required this.title, 
+    required this.value, 
+    this.drawdots
+    });
+
+  final String icon;
+  final String title;
+  final String value;
+  final Widget? drawdots;
+  
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
     padding: const EdgeInsets.fromLTRB(8, 8, 8, 8), // Added right padding
     decoration: BoxDecoration(
       color: const Color(0xFF181B21),
@@ -149,7 +242,7 @@ Widget _buildInfoCard(String icon, String title, String value, BuildContext cont
                     maxLines: 1,),
                   ),
                   const SizedBox(width: 4),
-                  if (drawdots != null) drawdots,
+                  if (drawdots != null) drawdots!,
                 ],
               ),
               Text(value, 
@@ -160,11 +253,21 @@ Widget _buildInfoCard(String icon, String title, String value, BuildContext cont
       ],
     ),
   );
+  }
 }
 
-Widget _buildDifficultyDots(RecipeDifficulty difficulty) {
-  // ... (No changes here, but fixed the spacing issue in _buildInfoCard)
-  int activeDots;
+class DifficultyDots extends StatelessWidget {
+  const DifficultyDots({
+    super.key, 
+    required this.difficulty
+    });
+
+  final RecipeDifficulty difficulty;
+
+
+  @override
+  Widget build(BuildContext context) {
+      int activeDots;
   switch (difficulty) {
     case RecipeDifficulty.beginner:
       activeDots = 1;
@@ -187,29 +290,42 @@ Widget _buildDifficultyDots(RecipeDifficulty difficulty) {
     children: List.generate(totalDots, (index) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 1.0),
-        child: _buildDots(index < activeDots),
+        child: Dots(isActive: index < activeDots),
       );
     }),
   );
+  }
 }
 
+class Dots extends StatelessWidget {
+  const Dots({
+    super.key, 
+    required this.isActive
+    });
 
-// ... (The rest of your helper functions _buildDots, _buildNutritionFacts, etc. can stay here without changes)
-// ... I've included them above for completeness
+  final bool isActive;
 
 
- 
-  Widget  _buildDots(bool isActive){
+  @override
+  Widget build(BuildContext context) {
     return CircleAvatar(
-      
       radius: 1,
-    backgroundColor: isActive? Color(0xFFD76261):Colors.grey,
-    
-    ) ;
+      backgroundColor: isActive? Color(0xFFD76261):Colors.grey, 
+    );
   }
+}
+
+class NutritionFacts extends StatelessWidget {
+  const NutritionFacts({
+    super.key, 
+    required this.recipe
+    });
+
+    final Recipe recipe;
 
 
-Widget _buildNutritionFacts(Recipe recipe,BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16,8,16,8),
       padding: const EdgeInsets.all(16),
@@ -218,22 +334,57 @@ Widget _buildNutritionFacts(Recipe recipe,BuildContext context) {
         color: Theme.of(context).colorScheme.onSurface,
       ),
       child: Row(
+
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
         children: [
-          Expanded(child: _buildFactCol(recipe.nutrition.calories, 'Calories', 'kcal')),
-          _buildStickSeparator(),
-          Expanded(child: _buildFactCol(recipe.nutrition.protein, 'Protein', 'g')),
-          _buildStickSeparator(),
-          Expanded(child: _buildFactCol(recipe.nutrition.carbs, 'Carbohydrates', 'g')),
+
+          Expanded(
+            child: FractCol(
+              nutrirtion: recipe.nutrition.calories, 
+              title: 'Calories', 
+              unit:'kcal'
+              )),
+
+          const StickSeparator(),
+
+          Expanded(
+            child: FractCol(
+              nutrirtion: recipe.nutrition.protein, 
+              title: 'Protein', 
+              unit: 'g'
+            )),
+          const StickSeparator(),
+
+          Expanded(
+            child: FractCol(
+            nutrirtion:  recipe.nutrition.carbs, 
+            title:  'Carbohydrates', 
+            unit: 'g'
+            )),
         ],
       ),
     ) ;
-    }
+  }
+}
+
+class FractCol extends StatelessWidget {
+
+  const FractCol({
+    super.key, 
+    required this.nutrirtion, 
+    required this.title, 
+    required this.unit
+    });
+
+  final int nutrirtion;
+  final String title;
+  final String unit;
 
 
-
-Widget  _buildFactCol (int nutrition, String title  , String unit){
-  return Column(
+  @override
+  Widget build(BuildContext context) {
+    return Column(
     children: [
       Text(
         title, style: GoogleFonts.nunito(
@@ -246,7 +397,7 @@ Widget  _buildFactCol (int nutrition, String title  , String unit){
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Text(
-            nutrition.toString()  , style: GoogleFonts.nunito(
+            nutrirtion.toString()  , style: GoogleFonts.nunito(
               color: Colors.white, fontSize: 18, fontWeight: FontWeight.w400,
             ),
             overflow: TextOverflow.ellipsis,
@@ -258,12 +409,15 @@ Widget  _buildFactCol (int nutrition, String title  , String unit){
         ],
       )
     ],
-  );
-}    
+  ) ;
+  }
+}
 
+class StickSeparator extends StatelessWidget {
+  const StickSeparator({super.key});
 
-
-Widget _buildStickSeparator() {
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: 1,
       height: 40,
@@ -283,3 +437,4 @@ Widget _buildStickSeparator() {
       ),
     );
   }
+}

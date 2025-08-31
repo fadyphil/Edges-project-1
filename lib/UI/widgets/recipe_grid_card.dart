@@ -1,13 +1,9 @@
-import 'dart:ui';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mini_project_1/UI/widgets/info_row_builder.dart';
+import 'package:mini_project_1/UI/widgets/recipe_card.dart';
 import 'package:mini_project_1/UI/widgets/tag_row_builder.dart';
-import 'package:mini_project_1/blocs/favourited/favourited_cubit.dart';
-import 'package:mini_project_1/blocs/user/user_cubit.dart';
 import 'package:mini_project_1/data/models/recipe_model.dart';
 import 'package:mini_project_1/routes/app_router.dart';
 
@@ -21,9 +17,6 @@ class RecipeGridCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Watch the FavouritedCubit to rebuild the card when the favorite state changes
-    final isFavorited = context.watch<FavouritedCubit>().state.favouritedRecipes.contains(recipe);
-
     return GestureDetector(
       onTap: () {
         // Navigate to the details page on tap
@@ -54,7 +47,7 @@ class RecipeGridCard extends StatelessWidget {
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  stops: const [0.2,0.5,0.6,0.8,1]
+                  stops: const [0.2,0.45,0.6,0.8,1]
                 ),
               ),
               child: Image.asset(
@@ -91,9 +84,7 @@ class RecipeGridCard extends StatelessWidget {
                 
                     TagRowBuilder(recipe: recipe),
                     const SizedBox(height: 18),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: info_row_builder(recipe: recipe, userfactor: context.watch<UserCubit>().getUsersFactor()))
+                    InfoRowBuilder(recipe: recipe)
                   ],
                 ),
               ),
@@ -109,13 +100,13 @@ class RecipeGridCard extends StatelessWidget {
                 children: [
         
                   Container(
-                    padding: EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(4),
                     
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       color: recipe.mealType.name=='meat'? 
-                    const Color(0xFFD76261).withValues(alpha: 0.4):
-                    const Color(0xFF4ABC96).withValues(alpha:  0.4),
+                     const Color(0xFFD76261).withAlpha(102) 
+                    :const Color(0xFF4ABC96).withAlpha(102)
                     ),
                     child:SvgPicture.asset(
                       'assets/images/${recipe.mealType.name}_base.svg',
@@ -125,35 +116,7 @@ class RecipeGridCard extends StatelessWidget {
                   ),
         
         
-                  InkWell(
-                    onTap: () {
-                      context.read<FavouritedCubit>().toggleFavourite(recipe);
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadiusGeometry.circular(12),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(
-                          sigmaX: 5, sigmaY: 5
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 0.5
-                            )
-                          ),
-                          child: Icon(
-                            isFavorited ? Icons.favorite : Icons.favorite_border,
-                            color: isFavorited ? Colors.redAccent : Colors.white,
-                            size: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  FavouriteButton(recipe: recipe)
                 ],
               ),
             ),

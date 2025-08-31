@@ -46,7 +46,7 @@ class FilterBottomSheet extends StatelessWidget {
           child: Column(
             children: [
               // --- Drag Handle & Title ---
-              _buildHeader(context),
+              Header(),
 
               // --- Scrollable Tag List (The part that uses BlocSelector) ---
               Expanded(
@@ -72,13 +72,13 @@ class FilterBottomSheet extends StatelessWidget {
                       return const Center(child: Text("No tags available to filter."));
                     }
 
-                    return _buildTagList(context, scrollController, filterData);
+                    return TagList(scrollController: scrollController, filterData: filterData);
                   },
                 ),
               ),
               
               // --- Action Buttons ---
-              _buildActionButtons(context),
+              ActionButtons(),
             ],
           ),
         );
@@ -87,8 +87,16 @@ class FilterBottomSheet extends StatelessWidget {
   }
 
   // --- Helper Widgets ---
+}
 
-  Widget _buildHeader(BuildContext context) {
+class Header extends StatelessWidget {
+  const Header({
+    super.key,
+  });
+
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Padding(
@@ -113,8 +121,20 @@ class FilterBottomSheet extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildTagList(BuildContext context, ScrollController scrollController, _FilterData filterData) {
+class TagList extends StatelessWidget {
+  const TagList({
+    super.key,
+    required this.scrollController,
+    required this.filterData,
+  });
+
+  final ScrollController scrollController;
+  final _FilterData filterData;
+
+  @override
+  Widget build(BuildContext context) {
     return ListView(
       controller: scrollController,
       padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
@@ -147,8 +167,15 @@ class FilterBottomSheet extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildActionButtons(BuildContext context) {
+class ActionButtons extends StatelessWidget {
+  const ActionButtons({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0).copyWith(top: 8),
       child: Row(

@@ -39,7 +39,10 @@ class ExploreScreen extends StatelessWidget {
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
-                        child: _buildGreeetingSentence(_getTimeForGreeting(), username, context),
+                        child: GreetingSentence(
+                          greeting: _getTimeForGreeting, 
+                          username: username
+                          ),
                       ),
                     ),
 
@@ -57,16 +60,13 @@ class ExploreScreen extends StatelessWidget {
                     ),
 
                     const SliverToBoxAdapter(child: RandomPicker()),
-                    SliverToBoxAdapter(child: _buildLabelSeparator(context)),
+                    const  SliverToBoxAdapter(
+                      child: LabelSeparator(label: 'Recipes')
+                      ),
 
                     // Selector for the Search and Filter Bar
-                    SliverToBoxAdapter(
-                      child:
-                     
-                          
-                           SearchAndFilterBar()
-                      
-                    
+                   const SliverToBoxAdapter(
+                      child:SearchAndFilterBar()
                     ),
 
                     // --- THE HIGHLY-PERFORMANT SLIVER LIST ---
@@ -78,8 +78,8 @@ class ExploreScreen extends StatelessWidget {
                       },
                       builder: (context,state){
                         return state.theViewType==ExploreViewType.grid?
-                        _buildGridRceipes(context, state.filteredRecipes):
-                        _buildRecipeListSliver(context, state.filteredRecipes) ;
+                        GridSliverRecipes(allRecipes: state.filteredRecipes):
+                        ListSliverRecipes(allRecipes: state.filteredRecipes) ;
                       }
                       )
                   ],
@@ -94,7 +94,27 @@ class ExploreScreen extends StatelessWidget {
 
   // --- REFACTORED LIST BUILDER ---
   // This function now returns a Sliver, not a regular widget.
-  Widget _buildRecipeListSliver(BuildContext context, List<Recipe> allRecipes) {
+  
+  // NOTE: All your other helper methods (_buildGreeetingSentence, _buildLabelSeparator, etc.)
+  // remain exactly the same. They are pasted below for completeness.
+
+  String get _getTimeForGreeting {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Morning';
+    if (hour < 17) return 'Afternoon';
+    return 'Evening';
+  }
+}
+
+class ListSliverRecipes extends StatelessWidget {
+  const ListSliverRecipes({
+    super.key,
+    required this.allRecipes,
+  });
+  final List<Recipe> allRecipes;
+
+  @override
+  Widget build(BuildContext context) {
     if (allRecipes.isEmpty) {
       return const SliverFillRemaining( // A sliver that fills the remaining space
         child: Center(child: Text("No recipes found.",)),
@@ -111,31 +131,20 @@ class ExploreScreen extends StatelessWidget {
       ),
     );
   }
-  
-  // NOTE: All your other helper methods (_buildGreeetingSentence, _buildLabelSeparator, etc.)
-  // remain exactly the same. They are pasted below for completeness.
+}
 
-  Widget _buildLabelSeparator(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          'Recipes',
-          style: Theme.of(context).textTheme.headlineMedium,
-        ),
-      ),
-    );
-  }
+class GreetingSentence extends StatelessWidget {
+  const GreetingSentence({
+    super.key,
+    required this.greeting,
+    required this.username,
+  });
 
-  String _getTimeForGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return 'Morning';
-    if (hour < 17) return 'Afternoon';
-    return 'Evening';
-  }
+  final String greeting;
+  final String username;
 
-Widget _buildGreeetingSentence(String greeting, String username, BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
   // Get the styles from the theme once to make the code cleaner
   final headlineStyle = Theme.of(context).textTheme.headlineSmall;
   final primaryColor = Theme.of(context).colorScheme.primary;
@@ -170,8 +179,8 @@ Widget _buildGreeetingSentence(String greeting, String username, BuildContext co
           ),
           // --- END OF FIX ---
 
-          const SizedBox(width: 8), // Add some spacing for safety
-          _buildLevelDropdown(context)
+        const SizedBox(width: 8), // Add some spacing for safety
+        const LevelDropDown()
         ],
       ),
       Text(
@@ -184,15 +193,15 @@ Widget _buildGreeetingSentence(String greeting, String username, BuildContext co
     ],
   );
 }
-  Widget _getIconForLevel(UserCookingLevel level) {
-    switch (level) {
-      case UserCookingLevel.chef: return const Icon(Icons.whatshot_outlined, color: Colors.orange, size: 14);
-      case UserCookingLevel.intermediate: return const Icon(Icons.local_dining, color: Colors.lightGreenAccent, size: 14);
-      case UserCookingLevel.beginner: return const Icon(Icons.egg_alt_outlined, color: Colors.lightBlueAccent, size: 14);
-    }
-  }
+}
 
-  Widget _buildLevelDropdown(BuildContext context) {
+class LevelDropDown extends StatelessWidget {
+  const LevelDropDown({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final currentUserLevel = context.watch<UserCubit>().state.user.level;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
@@ -217,7 +226,7 @@ Widget _buildGreeetingSentence(String greeting, String username, BuildContext co
           selectedItemBuilder: (BuildContext context) {
             return UserCookingLevel.values.map((level) {
               return Row(children: [
-                _getIconForLevel(level),
+                GetIconForLevel(level: level),
                 const SizedBox(width: 2),
                 Text(level.name[0] + level.name.substring(1), style: const TextStyle(color: Colors.white, fontSize: 16)),
               ]);
@@ -227,7 +236,7 @@ Widget _buildGreeetingSentence(String greeting, String username, BuildContext co
             return DropdownMenuItem<UserCookingLevel>(
               value: level,
               child: Row(children: [
-                _getIconForLevel(level),
+                GetIconForLevel(level: level),
                 const SizedBox(width: 8),
                 Text(level.name[0].toUpperCase() + level.name.substring(1), style: const TextStyle(color: Colors.white, fontSize: 16)),
               ]),
@@ -239,21 +248,69 @@ Widget _buildGreeetingSentence(String greeting, String username, BuildContext co
   }
 }
 
+class GetIconForLevel extends StatelessWidget {
+  const GetIconForLevel({
+    super.key,
+    required this.level,
+  });
+
+  final UserCookingLevel level;
+
+  @override
+  Widget build(BuildContext context) {
+    switch (level) {
+      case UserCookingLevel.chef: return const Icon(Icons.whatshot_outlined, color: Colors.orange, size: 14);
+      case UserCookingLevel.intermediate: return const Icon(Icons.local_dining, color: Colors.lightGreenAccent, size: 14);
+      case UserCookingLevel.beginner: return const Icon(Icons.egg_alt_outlined, color: Colors.lightBlueAccent, size: 14);
+    }
+  }
+}
+
+class LabelSeparator extends StatelessWidget {
+  const LabelSeparator({
+    super.key,
+    required this.label,
+  });
+  final String label;
 
 
-Widget _buildGridRceipes (BuildContext context, List<Recipe> allRecipes){
- return SliverGrid.builder(
-  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-    maxCrossAxisExtent: 280,
-    crossAxisSpacing:0,
-    mainAxisSpacing: 4,
-    mainAxisExtent: 220
-    ), 
-  itemCount: allRecipes.length,
-  itemBuilder: (BuildContext context, int index) { 
-     return RecipeGridCard(recipe: allRecipes[index]);
-   },
-  
- );
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
+      ),
+    );
+  }
+}
+
+class GridSliverRecipes extends StatelessWidget {
+   const GridSliverRecipes({
+    super.key,
+    required this.allRecipes,
+    });
+
+   final List<Recipe> allRecipes;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverGrid.builder(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 310,
+        crossAxisSpacing:0,
+        mainAxisSpacing: 4,
+        mainAxisExtent: 220
+        ), 
+      itemCount: allRecipes.length,
+      itemBuilder: (BuildContext context, int index) { 
+        return RecipeGridCard(recipe: allRecipes[index]);
+      },
+   );
+  }
 }
 

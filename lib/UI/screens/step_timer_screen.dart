@@ -74,7 +74,7 @@ class _StepTimerView extends StatelessWidget {
                     _buildStepIndicator(state.currentStepIndex + 1, recipe.steps.length, context),
                     const SizedBox(height: 16),
                     // _buildStepCard(currentStep, state.currentStepIndex + 1, isCurrent: true),
-                    StepCard(index:state.currentStepIndex,step:  currentStep, userfactor: userfactor, isCurrent: true),
+                    StepCard(index:state.currentStepIndex,step:  currentStep, isCurrent: true),
                     const SizedBox(height: 16),
                     SvgPicture.asset('assets/images/separator.svg'),
                     const SizedBox(height: 8,),
@@ -104,7 +104,6 @@ class _StepTimerView extends StatelessWidget {
                       StepCard(
                         index: state.currentStepIndex+1, 
                         step: nextStep,
-                        userfactor: userfactor,
                         isCurrent: false,),
                         Positioned.fill(
                           child: DecoratedBox(
@@ -132,8 +131,7 @@ class _StepTimerView extends StatelessWidget {
                         ): SizedBox.shrink(),
                    
                     // _buildTimelineSection(recipe, state.overallProgress , userfactor),
-                    TimelineBar(recipe: recipe, 
-                    userfactor: userfactor,
+                    TimelineBar(recipe: recipe,
                     elapsedSecondsInStep:context.watch<StepTimerCubit>().finalelapsedTime.toInt(),
                     currentStepIndex: state.currentStepIndex,
                     timerColor: _getTimerColor(state.timerColor),

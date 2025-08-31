@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mini_project_1/data/models/enums.dart';
 import 'package:mini_project_1/theme/app_theme.dart';
 
-class OnboardingPage3 extends StatelessWidget {
+class OnboardingPage3 extends StatefulWidget {
   final TextEditingController nameController;
   final UserCookingLevel? selectedLevel;
   final Function(UserCookingLevel) onLevelSelected;
@@ -13,6 +13,12 @@ class OnboardingPage3 extends StatelessWidget {
     required this.selectedLevel,
     required this.onLevelSelected,
   });
+
+  @override
+  State<OnboardingPage3> createState() => _OnboardingPage3State();
+}
+
+class _OnboardingPage3State extends State<OnboardingPage3> {
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +75,7 @@ class OnboardingPage3 extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           TextField(
-            controller: nameController,
+            controller: widget.nameController,
             decoration: const InputDecoration(
               hintText: 'Enter your name',
             ),
@@ -87,12 +93,12 @@ class OnboardingPage3 extends StatelessWidget {
     required String subtitle,
     required Icon icon,
   }) {
-    final bool isSelected = selectedLevel == level;
+    final bool isSelected = widget.selectedLevel == level;
     final colorScheme = Theme.of(context).colorScheme;
     final targetbordercolor = isSelected? colorScheme.primary.withValues(alpha:  0.3) : colorScheme.secondary.withValues(alpha:  0.5);
 
     return GestureDetector(
-      onTap: () => onLevelSelected(level),
+      onTap: () => widget.onLevelSelected(level),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 350),
         curve: Curves.easeInOut,

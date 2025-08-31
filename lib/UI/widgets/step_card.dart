@@ -1,36 +1,39 @@
 import 'package:flutter/material.dart' hide Step;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mini_project_1/UI/sub_screens/steps_subscreen.dart';
+import 'package:mini_project_1/UI/widgets/step_type_tag.dart';
+import 'package:mini_project_1/blocs/user/user_cubit.dart';
 import 'package:mini_project_1/data/models/enums.dart';
 import 'package:mini_project_1/data/models/step_model.dart';
 
 class StepCard extends StatelessWidget {
+
   final int index;
   final Step? step;
-  final num userfactor;
   final bool? isCurrent;
-  const StepCard({super.key, required this.index, required this.step, required this.userfactor,  this.isCurrent });
+
+  const StepCard({
+    super.key, 
+    required this.index, 
+    required this.step, 
+    this.isCurrent
+    });
 
   @override
   Widget build(BuildContext context) {
-    return _buildStepCard(index, step, userfactor, context);
-  }
-}
-
-
-Widget _buildStepCard(int index,Step? step, num userfactor,BuildContext context) {
-  final bool shouldBuild ;
+    final userfactor =context.watch<UserCubit>().getUsersFactor();
+     final bool shouldBuild ;
 
   if(step==null){
     return SizedBox.shrink();
   }
 
-  if(step.note==null){
+  if(step?.note==null) {
     shouldBuild=false;
-  }else{
+  } else{
     shouldBuild=true;
   }
-  return Card(
+    return Card(
     margin: const EdgeInsets.only(bottom: 16),
     child: Padding(
       padding: const EdgeInsets.all(16),
@@ -39,28 +42,53 @@ Widget _buildStepCard(int index,Step? step, num userfactor,BuildContext context)
         spacing: 16,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeaderRow(index, step.title, 
-          ((step.baseTimeInSeconds/60)*userfactor).toStringAsFixed(1), step.type, context)
+          HeaderRow(
+            index:index,
+            title: step!.title, 
+          time:((step!.baseTimeInSeconds/60)*userfactor).toStringAsFixed(1),
+          type: step!.type
+          )
           ,Column(
             mainAxisSize:  MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildStepType(step.type.name.toLowerCase()),
+              StepTypeTag(
+                type:step!.type.name.toLowerCase()
+                ),
               const SizedBox(height: 4),
-          Text(step.description , style: GoogleFonts.nunito(
+          Text(step!.description , style: GoogleFonts.nunito(
             color: Color(0xFF888481), fontSize: 14, fontWeight: FontWeight.w400,))
             ],
           ),
-          shouldBuild ? buildinfo(step.note!, shouldBuild) : SizedBox.shrink()
+          shouldBuild ? StepInfo(
+                info:step!.note!,
+                ) : SizedBox.shrink()
         ],
       ),
     ),
-  );
+  ); 
+  }
 }
 
+class HeaderRow extends StatelessWidget {
 
-Widget  _buildHeaderRow (int index, String title, String time,StepType type,BuildContext context){
-  Color color;
+  const HeaderRow({
+    super.key, 
+    required this.index, 
+    required this.title, 
+    required this.time, 
+    required this.type
+    });
+
+    final int index;
+    final String title;
+    final String time;
+    final StepType type;
+
+
+  @override
+  Widget build(BuildContext context) {
+    Color color;
   Color textColor;
   if(type.name=='cooking'){
     color= const Color(0xFFDB7A2B).withValues(alpha: 0.2);
@@ -95,13 +123,23 @@ Widget  _buildHeaderRow (int index, String title, String time,StepType type,Buil
       )
     ],
   );
+  }
 }
 
+class StepInfo extends StatelessWidget {
+
+  const StepInfo({
+
+    super.key, 
+    required this.info, 
+    });
+
+  final String info;
 
 
-Widget buildinfo (String info  , bool shouldBuild){
-
-  return Container(
+  @override
+  Widget build(BuildContext context) {
+    return Container(
     // margin: const EdgeInsets.all(16),
     padding: const EdgeInsets.all(8),
     decoration: BoxDecoration(
@@ -115,13 +153,70 @@ Widget buildinfo (String info  , bool shouldBuild){
         runSpacing: 8,
         spacing: 4,
         children: [
-          Icon(Icons.info_outline , color: Colors.white,size: 18,),
-          Text(info, style: GoogleFonts.nunito(
-            color: Colors.white, fontSize: 12, fontWeight: FontWeight.w400,
-          ),)
+          Icon(
+            Icons.info_outline , 
+            color: Colors.white,
+            size: 18,
+            ),
+          Text(
+            info, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),
+            )
         ],
       ),
     ),
   );
+  }
 }
 
+
+
+// class StepType extends StatelessWidget {
+
+//   const StepType({
+//     super.key, 
+//     required this.type, 
+//     this.extranumber
+//     });
+
+//   final String type;
+//   final num? extranumber;
+
+
+//   @override
+//   Widget build(BuildContext context) {
+//   Color color;
+//   Color textColor;
+//   if(type=='cooking'){
+//     color= const Color(0xFFDB7A2B).withValues(alpha:  0.2);
+//     textColor  = const Color(0xFFDB7A2B);
+//   }else {
+//      color= const Color(0xFF239D66).withValues(alpha:  0.2);
+//      textColor= const Color(0xFF239D66);
+//   }
+//   return Container(
+//     padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 2),
+//     decoration: BoxDecoration(
+//       color: color,
+//       borderRadius: BorderRadius.circular(8),
+
+//     ),
+//     child: Row(
+//       spacing: 4,
+//       mainAxisSize: MainAxisSize.min,
+      
+//       children: [
+//         CircleAvatar(
+//           radius: 4,
+//           backgroundColor: textColor,
+//         ),
+//         Text(type[0].toUpperCase() + type.substring(1).toLowerCase(), style: GoogleFonts.nunito(
+//           color: textColor, fontSize: 14, fontWeight: FontWeight.w600,
+//         ),),
+//         if(extranumber!=null) Text('- ${extranumber.toString()}m', style: TextStyle(
+//           color: textColor, fontSize: 14, fontWeight: FontWeight.w600,
+//         ),)
+//       ],
+//     ),
+//   );
+//   }
+// }

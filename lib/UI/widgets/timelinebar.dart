@@ -1,11 +1,12 @@
 // lib/UI/widgets/timelinebar.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mini_project_1/UI/widgets/step_type_tag.dart';
+import 'package:mini_project_1/blocs/user/user_cubit.dart';
 import 'package:mini_project_1/data/models/recipe_model.dart';
 
 class TimelineBar extends StatelessWidget {
   final Recipe recipe;
-  final num userfactor;
   final Color? timerColor;
   
   // NEW: We now need the current step's index and its progress.
@@ -15,7 +16,6 @@ class TimelineBar extends StatelessWidget {
   const TimelineBar({
     super.key,
     required this.recipe,
-    required this.userfactor,
     this.currentStepIndex,
     this.elapsedSecondsInStep,
     this.timerColor,
@@ -26,6 +26,7 @@ class TimelineBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userfactor =context.watch<UserCubit>().getUsersFactor();
     final int prepTimeMinutes = (recipe.prepTimeInSeconds / 60 * userfactor).ceil();
     final int cookingTimeMinutes = (recipe.cookingTimeInSeconds / 60 * userfactor).ceil();
 

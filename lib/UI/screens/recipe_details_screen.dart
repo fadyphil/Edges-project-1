@@ -12,7 +12,6 @@ import 'package:mini_project_1/blocs/favourited/favourited_cubit.dart';
 import 'package:mini_project_1/blocs/favourited/favourited_state.dart';
 import 'package:mini_project_1/blocs/recipe_details/recipe_details_cubit.dart';
 import 'package:mini_project_1/blocs/recipe_details/recipe_details_state.dart';
-import 'package:mini_project_1/blocs/user/user_cubit.dart';
 import 'package:mini_project_1/data/models/enums.dart';
 import 'package:mini_project_1/data/models/recipe_model.dart';
 import 'package:mini_project_1/routes/app_router.dart';
@@ -21,36 +20,49 @@ import 'package:mini_project_1/routes/app_router.dart';
 class RecipeDetailsScreen extends StatelessWidget {
   final Recipe recipe;
 
-  const RecipeDetailsScreen({super.key, required this.recipe});
+  const RecipeDetailsScreen({
+    super.key, 
+    required this.recipe
+    });
+
   @override
   Widget build(BuildContext context) {
-    final userfactor = context.watch<UserCubit>().getUsersFactor();
 
     return BlocProvider(
+
       create: (context) => RecipeDetailsCubit(recipe: recipe),
+
       child: SafeArea(
+        
         child: Scaffold(
+
           floatingActionButton: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-            child: _buildStartButton(context, recipe),
+            child: StartButton(recipe:recipe),
           ),
+
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
 
 
-
-         
-          backgroundColor: const Color(0xFF0E1118),
+          // backgroundColor: const Color(0xFF0E1118),
           body: BlocBuilder<RecipeDetailsCubit, RecipeDetailsState>(
+
             builder: (context, state) {
               return state.when(
+
                 (currentRecipe, currentTab) => CustomScrollView(
+                  
                   slivers: [
-                    _buildSliverAppBar(context, currentRecipe),
-                    _buildStaticContent(context, currentRecipe, currentTab),
+                    CustomSliverAppBar(recipe: currentRecipe),
+                    StaticContent(recipe: currentRecipe, selectedTab: currentTab),
                     
                     // --- THE FIX IS HERE ---
                     
-                   _buildTabContent(currentTab, currentRecipe, userfactor, context),
+                   TabContent(
+                    recipe: recipe, 
+                    currentTab: currentTab, 
+                    currentRecipe: currentRecipe
+                    ),
                   ],
                 ),
               );
@@ -60,30 +72,118 @@ class RecipeDetailsScreen extends StatelessWidget {
       ),
     );
   }
+  
+  // These helper methods return lists of Slivers to be added conditionally
 
 
 
-Widget _buildTabContent(RecipeTab currentTab, Recipe currentRecipe, num userfactor,BuildContext context) {
-  if (currentTab == RecipeTab.overview) {
-    // Since buildOverviewSlivers returns a list, we need a parent sliver.
-    return SliverMainAxisGroup(
-      slivers: buildOverviewSlivers(currentRecipe, userfactor, context),
-    );
-  } else {
-    // The Steps tab already has a single parent sliver (SliverPadding).
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      sliver: SliverMainAxisGroup(
-        slivers: buildTimelineAndStepsSlivers(currentRecipe, userfactor),
+  // ... (Keep _buildTags and _buildInfoCard methods as they are) ...
+}
+
+class StaticContent extends StatelessWidget {
+  const StaticContent({
+    super.key,
+    required this.recipe,
+    required this.selectedTab,
+  });
+
+  final Recipe recipe;
+  final RecipeTab selectedTab;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+        
+            SvgPicture.asset('assets/images/separator.svg'),
+            const SizedBox(height: 16),
+            TabSelector(selectedTab: selectedTab),
+          ],
+        ),
       ),
     );
   }
 }
 
+class TabSelector extends StatelessWidget {
+  const TabSelector({
+    super.key,
+    required this.selectedTab,
+  });
 
+  final RecipeTab selectedTab;
 
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: const Color(0xFF181B21),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF2B2E33)),
+      ),
+      child: Row(
+        children: [
+          TabButton(title: "Overview", tab: RecipeTab.overview, selectedTab: selectedTab),
+          TabButton(title: "Steps", tab: RecipeTab.steps, selectedTab: selectedTab),
+        ],
+      ),
+    );
+  }
+}
 
-  SliverAppBar _buildSliverAppBar(BuildContext context, Recipe recipe) {
+class TabButton extends StatelessWidget {
+
+  const TabButton({
+    super.key,
+    required this.title,
+    required this.tab,
+    required this.selectedTab,
+  });
+
+  final String title;
+  final RecipeTab tab;
+  final RecipeTab selectedTab;
+
+  @override
+  Widget build(BuildContext context) {
+    bool isSelected = selectedTab == tab;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => context.read<RecipeDetailsCubit>().toggleTab(tab),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isSelected ? const Color(0xFF2B2E33) : Colors.transparent,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Text(
+            title,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.nunito(
+                color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CustomSliverAppBar extends StatelessWidget {
+  const CustomSliverAppBar({
+    super.key,
+    required this.recipe,
+  });
+
+  final Recipe recipe;
+
+  @override
+  Widget build(BuildContext context) {
     final Color tintColor ;
     if(recipe.mealType.name=='meat'){
       tintColor=const Color(0xFFD76261).withValues(alpha: 0.1);
@@ -156,16 +256,18 @@ Widget _buildTabContent(RecipeTab currentTab, Recipe currentRecipe, num userfact
             ),
       ),
       title: SafeArea(
+
         child: Wrap(
-          children:[ Row(
+
+          children:[ 
+
+            Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildCircleIcon(context, Icons.arrow_back, Icons.arrow_back),
-              BlocSelector<FavouritedCubit, FavouritedState, bool>(
-                selector: (state) => state.favouritedRecipes.contains(recipe),
-               builder: (context, isFavourited) {
-                return _buildCircleIcon(context, Icons.favorite, isFavourited?Icons.favorite:Icons.favorite_border_outlined);
-              }),
+
+              BlurredCircleIcon(icon: Icons.arrow_back, onPressed: () => context.router.pop(), iconcolor: Colors.white,),
+
+              FavouriteIcon(recipe: recipe)
             ],
           ),]
         ),
@@ -173,14 +275,25 @@ Widget _buildTabContent(RecipeTab currentTab, Recipe currentRecipe, num userfact
       titleSpacing: 16.0,
     );
   }
+}
 
-  Widget _buildCircleIcon(BuildContext context, IconData icon, IconData altIcon) {
-    final isfaved = context.watch<FavouritedCubit>().state.favouritedRecipes.contains(recipe);
+class BlurredCircleIcon extends StatelessWidget {
+  const BlurredCircleIcon({
+    super.key,
+    required this.icon,
+    required this.onPressed,
+    required this.iconcolor,
+  });
+
+  final IconData icon;
+  final VoidCallback onPressed;
+  final Color iconcolor;
+
+  @override
+  Widget build(BuildContext context) {
+
     return GestureDetector(
-      onTap: () {
-        if (icon == Icons.arrow_back) context.router.pop();
-        if(altIcon==Icons.favorite||altIcon==Icons.favorite_border_outlined) context.read<FavouritedCubit>().toggleFavourite(recipe);
-      },
+      onTap: onPressed,
       
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
@@ -196,83 +309,84 @@ Widget _buildTabContent(RecipeTab currentTab, Recipe currentRecipe, num userfact
             
           ),
           child:
-              Icon(isfaved?altIcon:icon, 
-            color:icon==Icons.arrow_back?Colors.white:
-            (isfaved? Colors.redAccent:Colors.white) )
+              Icon(icon, color: iconcolor )
           
           ),
         ),
       ));
   }
+}
 
-  SliverToBoxAdapter _buildStaticContent(
-      BuildContext context, Recipe recipe, RecipeTab selectedTab) {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-        
-            SvgPicture.asset('assets/images/separator.svg'),
-            const SizedBox(height: 16),
-            _buildTabSelector(context, selectedTab),
-          ],
-        ),
-      ),
-    );
+class FavouriteIcon extends StatelessWidget {
+
+  const FavouriteIcon({
+    super.key, 
+    required this.recipe
+    });
+
+  final Recipe recipe;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocSelector<FavouritedCubit, FavouritedState, bool>(
+      selector: (state) => state.favouritedRecipes.contains(recipe),
+      builder: (contet, isFavourited){
+        return BlurredCircleIcon(
+            onPressed: () {
+              contet.read<FavouritedCubit>().toggleFavourite(recipe);
+            },
+            icon: Icons.favorite,
+            iconcolor: isFavourited?Colors.red:Colors.white
+          );
+      }
+      );
   }
-  
-  // These helper methods return lists of Slivers to be added conditionally
+}
 
-  Widget _buildTabSelector(BuildContext context, RecipeTab selectedTab) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: const Color(0xFF181B21),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF2B2E33)),
-      ),
-      child: Row(
-        children: [
-          _buildTabButton(context, "Overview", RecipeTab.overview, selectedTab),
-          _buildTabButton(context, "Steps", RecipeTab.steps, selectedTab),
+class TabContent extends StatelessWidget {
+  const TabContent({
+    super.key,
+    required this.recipe,
+    required this.currentTab,
+    required this.currentRecipe,
+  });
+
+  final Recipe recipe;
+  final RecipeTab currentTab;
+  final Recipe currentRecipe;
+
+  @override
+  Widget build(BuildContext context) {
+  if (currentTab == RecipeTab.overview) {
+    return OverViewSubScreen(recipe: recipe
+        );
+  } else {
+    // The Steps tab already has a single parent sliver (SliverPadding).
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      sliver: SliverMainAxisGroup(
+        slivers: [
+          TimeLineAndStepsSlivers(recipe: recipe),
         ],
       ),
     );
   }
-
-  Widget _buildTabButton(BuildContext context, String title, RecipeTab tab, RecipeTab selectedTab) {
-    bool isSelected = selectedTab == tab;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => context.read<RecipeDetailsCubit>().toggleTab(tab),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF2B2E33) : Colors.transparent,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.nunito(
-                color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
-          ),
-        ),
-      ),
-    );
-  }
-
-
-
-  // ... (Keep _buildTags and _buildInfoCard methods as they are) ...
+}
 }
 
+class StartButton extends StatelessWidget {
 
-Widget _buildStartButton (BuildContext context, Recipe recipe){
-  return GestureDetector(
+  const StartButton({
+    super.key, 
+    required this.recipe
+    });
+
+  final Recipe recipe;
+
+  @override
+  Widget build(BuildContext context) {
+ return GestureDetector(
     onTap: () {
       context.router.push(
         StepTimerRoute(recipe: recipe)
@@ -290,12 +404,9 @@ Widget _buildStartButton (BuildContext context, Recipe recipe){
           Text('Start ', style: GoogleFonts.nunito(
             color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600,),),
           Icon(Icons.play_arrow_rounded , color: Colors.white,size: 24,)
-        ],
-      ),
-    ));
+          ],
+        ),
+      )
+    );
+  }
 }
-
-
-
-
-

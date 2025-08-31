@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class StepTypeTag extends StatelessWidget {
   final String type;
@@ -8,11 +7,6 @@ class StepTypeTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildStepType(type, extranumber: extranumber);
-  }
-}
-
-Widget  _buildStepType(String type, {num? extranumber}){
   Color color;
   Color textColor;
   if(type=='cooking'){
@@ -38,12 +32,17 @@ Widget  _buildStepType(String type, {num? extranumber}){
           radius: 4,
           backgroundColor: textColor,
         ),
-        Text(type[0].toUpperCase() + type.substring(1).toLowerCase(), style: GoogleFonts.nunito(
-          color: textColor, fontSize: 14, fontWeight: FontWeight.w600,
-        ),
+        Text(type[0].toUpperCase() + type.substring(1).toLowerCase(), 
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: textColor,
+            fontWeight: FontWeight.w600,
+            fontSize: 14
+            ) ,
         overflow: TextOverflow.ellipsis,
         ),
-        if(extranumber!=null) Text('- ${extranumber.toString()}m', style: TextStyle(
+        if(extranumber!=null) Text(
+          '- ${extranumber.toString()}m', 
+          style: TextStyle(
           color: textColor, fontSize: 14, fontWeight: FontWeight.w600,
         ),
         overflow: TextOverflow.ellipsis,
@@ -51,4 +50,5 @@ Widget  _buildStepType(String type, {num? extranumber}){
       ],
     ),
   );
+  }
 }

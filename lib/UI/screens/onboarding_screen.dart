@@ -6,7 +6,7 @@ import 'package:mini_project_1/UI/sub_screens/onboarding_page3.dart';
 import 'package:mini_project_1/UI/sub_screens/onboording_page2.dart';
 import 'package:mini_project_1/blocs/user/user_cubit.dart';
 import 'package:mini_project_1/data/models/enums.dart';
-import 'package:mini_project_1/routes/app_router.dart'; // For UserCookingLevel
+import 'package:mini_project_1/routes/app_router.dart'; 
 
 
 
@@ -119,16 +119,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ],
                 ),
               ),
-              _buildPageIndicator(),
-              _buildBottomButton(),
+              PageIndicator(currentPage: _currentPage,),
+              BottomButton(
+                currentPage: _currentPage,
+                onPressed: _onButtonPressed,),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildPageIndicator() {
+class PageIndicator extends StatelessWidget {
+  const PageIndicator({
+    super.key,
+    required int currentPage,
+  }) : _currentPage = currentPage;
+
+  final int _currentPage;
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(3, (index) {
@@ -147,15 +159,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       }),
     );
   }
+}
 
-  Widget _buildBottomButton() {
+class BottomButton extends StatelessWidget {
+  const BottomButton({
+    super.key,
+    required int currentPage, 
+    this.onPressed,
+  }) : _currentPage = currentPage;
+
+  final int _currentPage;
+  final VoidCallback? onPressed;
+
+
+  @override
+  Widget build(BuildContext context) {
     final isLastPage = _currentPage == 2;
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: ConstrainedBox(
         constraints: BoxConstraints.tightFor(width: 500),
         child: ElevatedButton(
-          onPressed: _onButtonPressed,
+          onPressed: onPressed,
           style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
                 padding: WidgetStateProperty.all(const EdgeInsets.all(16)),
               ),
