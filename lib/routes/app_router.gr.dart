@@ -96,10 +96,15 @@ class RecipeDetailsRoute extends PageRouteInfo<RecipeDetailsRouteArgs> {
   RecipeDetailsRoute({
     Key? key,
     required Recipe recipe,
+    required String heroprefix,
     List<PageRouteInfo>? children,
   }) : super(
          RecipeDetailsRoute.name,
-         args: RecipeDetailsRouteArgs(key: key, recipe: recipe),
+         args: RecipeDetailsRouteArgs(
+           key: key,
+           recipe: recipe,
+           heroprefix: heroprefix,
+         ),
          initialChildren: children,
        );
 
@@ -109,32 +114,44 @@ class RecipeDetailsRoute extends PageRouteInfo<RecipeDetailsRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<RecipeDetailsRouteArgs>();
-      return RecipeDetailsScreen(key: args.key, recipe: args.recipe);
+      return RecipeDetailsScreen(
+        key: args.key,
+        recipe: args.recipe,
+        heroprefix: args.heroprefix,
+      );
     },
   );
 }
 
 class RecipeDetailsRouteArgs {
-  const RecipeDetailsRouteArgs({this.key, required this.recipe});
+  const RecipeDetailsRouteArgs({
+    this.key,
+    required this.recipe,
+    required this.heroprefix,
+  });
 
   final Key? key;
 
   final Recipe recipe;
 
+  final String heroprefix;
+
   @override
   String toString() {
-    return 'RecipeDetailsRouteArgs{key: $key, recipe: $recipe}';
+    return 'RecipeDetailsRouteArgs{key: $key, recipe: $recipe, heroprefix: $heroprefix}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! RecipeDetailsRouteArgs) return false;
-    return key == other.key && recipe == other.recipe;
+    return key == other.key &&
+        recipe == other.recipe &&
+        heroprefix == other.heroprefix;
   }
 
   @override
-  int get hashCode => key.hashCode ^ recipe.hashCode;
+  int get hashCode => key.hashCode ^ recipe.hashCode ^ heroprefix.hashCode;
 }
 
 /// generated route for

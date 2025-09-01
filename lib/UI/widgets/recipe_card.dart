@@ -4,16 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mini_project_1/UI/widgets/info_row_builder.dart';
 import 'package:mini_project_1/UI/widgets/tag_row_builder.dart';
+import 'package:mini_project_1/blocs/explore/explore_cubit.dart';
 import 'package:mini_project_1/data/models/models.dart';
 import 'package:mini_project_1/blocs/favourited/favourited_cubit.dart';
 import 'package:mini_project_1/routes/app_router.dart';
 
 class RecipeCard extends StatelessWidget {
   final Recipe recipe;
-
+  final String heroprefix;
   const RecipeCard({
     super.key,
-    required this.recipe,
+    required this.recipe, 
+    this.heroprefix ='explore',
   });
 
   @override
@@ -23,7 +25,7 @@ class RecipeCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         context.router.push(
-          RecipeDetailsRoute(recipe: recipe),
+          RecipeDetailsRoute(recipe: recipe,heroprefix: heroprefix),
         );
       },
       child: Card(
@@ -36,23 +38,26 @@ class RecipeCard extends StatelessWidget {
           
           children: [
       
-            DecoratedBox(
-              position: DecorationPosition.foreground,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors:  [
-                    Theme.of(context).colorScheme.onSurface,
-                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
-                  ] ,
-                  stops: const [0.02,0.2,1],
-                  begin: Alignment.centerRight,
-                  end: Alignment.centerLeft,
-                  )
-              ),
-              child: Image.asset(recipe.imagePath, width: 100, height: 100, fit: BoxFit.cover),
-               
-              ),
+            Hero(
+              tag: '${heroprefix}recipe_image_${recipe.id}',
+              child: DecoratedBox(
+                position: DecorationPosition.foreground,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors:  [
+                      Theme.of(context).colorScheme.onSurface,
+                      Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+                    ] ,
+                    stops: const [0.02,0.2,1],
+                    begin: Alignment.centerRight,
+                    end: Alignment.centerLeft,
+                    )
+                ),
+                child: Image.asset(recipe.imagePath, width: 100, height: 100, fit: BoxFit.cover),
+                 
+                ),
+            ),
            
       
       
@@ -65,15 +70,24 @@ class RecipeCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                           
                   children: [
-                    Text(
-                      recipe.name,
-                      style: Theme.of(context).textTheme.titleMedium,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+                    Hero(
+                      tag: '${heroprefix}recipe_name_${recipe.id}',
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: Text(
+                          recipe.name,
+                          style: Theme.of(context).textTheme.titleMedium,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 4),
                     // Dynamically build the tags
-                    TagRowBuilder(recipe: recipe),
+                    Hero(
+                      tag: '${heroprefix}recipe_tags_${recipe.id}',
+                      child: TagRowBuilder(recipe: recipe)
+                      ),
                     const SizedBox(height: 18),
                     InfoRowBuilder(recipe: recipe),
                   ],
@@ -92,22 +106,30 @@ class RecipeCard extends StatelessWidget {
                     
                 children: [
 
-                  FavouriteButton(recipe: recipe),
-                
-                  Container(
-                    
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: recipe.mealType.name=='meat'? 
-                      const Color(0xFFD76261).withValues(alpha: 0.1):
-                      const Color(0xFF4ABC96).withValues(alpha:  0.1)
+                  Hero(
+                    tag: '${heroprefix}recipe_favorite_${recipe.id}',
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: FavouriteButton(recipe: recipe))
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: SvgPicture.asset(
-                       'assets/images/${recipe.mealType.name}_base.svg',
-                        width: 16,
-                        height: 16,
+                
+                  Hero(
+                    tag: '${heroprefix}recipe_type_${recipe.id}',
+                    child: Container(
+                      
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: recipe.mealType.name=='meat'? 
+                        const Color(0xFFD76261).withValues(alpha: 0.1):
+                        const Color(0xFF4ABC96).withValues(alpha:  0.1)
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: SvgPicture.asset(
+                         'assets/images/${recipe.mealType.name}_base.svg',
+                          width: 16,
+                          height: 16,
+                        ),
                       ),
                     ),
                   )
@@ -134,10 +156,16 @@ class FavouriteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isFavorited = context.watch<FavouritedCubit>().state.favouritedRecipes.contains(recipe);
- 
+    final filterRecipe=  context.watch<ExploreCubit>().state.filteredRecipes.firstWhere((element) => element.id==recipe.id);
     return InkWell(
             onTap: () {
+              final favRec= recipe;
+              print('the hashcode from all recipes : ${filterRecipe.hashCode}');
+              print('the hashcode from the toggle bitton : ${favRec.hashCode}');
               context.read<FavouritedCubit>().toggleFavourite(recipe);
+              final allfavedrec=context.read<FavouritedCubit>().state.favouritedRecipes;
+              print(favRec.runtimeType==filterRecipe.runtimeType?'equal':'not equal');
+              print(allfavedrec);
                 },
             child: Container(
                     padding: const EdgeInsets.all(4),

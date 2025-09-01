@@ -70,7 +70,7 @@ class RandomPicker extends StatelessWidget {
                       final random = Random();
                       final randomRecipe = allRecipes[random.nextInt(allRecipes.length)];
                       context.router.push(
-                        RecipeDetailsRoute(recipe: randomRecipe),
+                        RecipeDetailsRoute(recipe: randomRecipe, heroprefix: ''),
                       );
                     }
                   },

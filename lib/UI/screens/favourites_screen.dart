@@ -39,7 +39,7 @@ class FavouritesScreen extends StatelessWidget {
             itemCount: favedSet.length,
             itemBuilder: (context, index) {
               final recipe = favedSet.toList()[index];
-              return RecipeCard(recipe: recipe);
+              return RecipeCard(recipe: recipe, heroprefix: 'favourites');
             }
                 
           );

@@ -92,12 +92,6 @@ class ExploreScreen extends StatelessWidget {
     );
   }
 
-  // --- REFACTORED LIST BUILDER ---
-  // This function now returns a Sliver, not a regular widget.
-  
-  // NOTE: All your other helper methods (_buildGreeetingSentence, _buildLabelSeparator, etc.)
-  // remain exactly the same. They are pasted below for completeness.
-
   String get _getTimeForGreeting {
     final hour = DateTime.now().hour;
     if (hour < 12) return 'Morning';

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mini_project_1/UI/widgets/filterbottomsheet.dart';
 import 'package:mini_project_1/blocs/explore/explore_cubit.dart';
 import 'package:mini_project_1/blocs/explore/explore_state.dart';
+import 'package:mini_project_1/data/models/enums.dart';
 
 class SearchAndFilterBar extends StatefulWidget {
   const SearchAndFilterBar({super.key});

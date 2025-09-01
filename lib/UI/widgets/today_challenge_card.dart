@@ -94,7 +94,7 @@ class TodayChallengeCard extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     context.router.push(
-                      RecipeDetailsRoute(recipe: recipe)
+                      RecipeDetailsRoute(recipe: recipe, heroprefix: 'challenge')
                     );
                   },
                   style: ElevatedButton.styleFrom(

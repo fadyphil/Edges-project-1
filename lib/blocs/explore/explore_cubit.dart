@@ -1,6 +1,7 @@
 // lib/blocs/explore/explore_cubit.dart
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mini_project_1/data/models/enums.dart';
 import 'package:mini_project_1/data/repos/recipe_repo.dart';
 import 'explore_state.dart';
 

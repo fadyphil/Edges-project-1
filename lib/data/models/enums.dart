@@ -62,3 +62,5 @@ enum TimerColorStatus { normal, acceptanceMargin, overtime }
 
 // An enum to represent the timer's overall status
 enum TimerStatus { initial, running, paused, finished }
+
+enum ExploreViewType { list, grid }

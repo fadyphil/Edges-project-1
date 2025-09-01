@@ -8,17 +8,17 @@ import 'package:mini_project_1/blocs/explore/explore_state.dart';
 // Helper class to hold just the data this widget needs.
 // This is good practice for BlocSelector to ensure equality checks are efficient.
 @immutable
-class _FilterData {
+class FilterData {
   final Set<String> allTags;
   final Set<String> selectedTags;
 
-  const _FilterData({required this.allTags, required this.selectedTags});
+  const FilterData({required this.allTags, required this.selectedTags});
 
   // Override equality operator and hashCode for BlocSelector to work correctly.
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is _FilterData &&
+      other is FilterData &&
           runtimeType == other.runtimeType &&
           allTags == other.allTags &&
           selectedTags == other.selectedTags;
@@ -50,12 +50,12 @@ class FilterBottomSheet extends StatelessWidget {
 
               // --- Scrollable Tag List (The part that uses BlocSelector) ---
               Expanded(
-                child: BlocSelector<ExploreCubit, ExploreState, _FilterData?>(
+                child: BlocSelector<ExploreCubit, ExploreState, FilterData?>(
                   selector: (state) {
                     // We select only the data we need. If the state is not 'loaded',
                     // we return null.
                     return state.mapOrNull(
-                      loaded: (loadedState) => _FilterData(
+                      loaded: (loadedState) => FilterData(
                         allTags: loadedState.allTags,
                         selectedTags: loadedState.selectedTags,
                       ),
@@ -131,7 +131,7 @@ class TagList extends StatelessWidget {
   });
 
   final ScrollController scrollController;
-  final _FilterData filterData;
+  final FilterData filterData;
 
   @override
   Widget build(BuildContext context) {

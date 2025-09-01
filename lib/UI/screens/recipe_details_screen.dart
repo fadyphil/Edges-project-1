@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mini_project_1/UI/sub_screens/overview_subscreen.dart';
 import 'package:mini_project_1/UI/sub_screens/steps_subscreen.dart';
 import 'package:mini_project_1/UI/widgets/tag_row_builder.dart';
+import 'package:mini_project_1/blocs/explore/explore_cubit.dart';
 import 'package:mini_project_1/blocs/favourited/favourited_cubit.dart';
 import 'package:mini_project_1/blocs/favourited/favourited_state.dart';
 import 'package:mini_project_1/blocs/recipe_details/recipe_details_cubit.dart';
@@ -19,10 +20,11 @@ import 'package:mini_project_1/routes/app_router.dart';
 @RoutePage()
 class RecipeDetailsScreen extends StatelessWidget {
   final Recipe recipe;
-
+  final String heroprefix;
   const RecipeDetailsScreen({
     super.key, 
-    required this.recipe
+    required this.recipe, 
+    this.heroprefix  ='explore',
     });
 
   @override
@@ -53,7 +55,7 @@ class RecipeDetailsScreen extends StatelessWidget {
                 (currentRecipe, currentTab) => CustomScrollView(
                   
                   slivers: [
-                    CustomSliverAppBar(recipe: currentRecipe),
+                    CustomSliverAppBar(recipe: currentRecipe, heroprefix: heroprefix),
                     StaticContent(recipe: currentRecipe, selectedTab: currentTab),
                     
                     // --- THE FIX IS HERE ---
@@ -72,12 +74,6 @@ class RecipeDetailsScreen extends StatelessWidget {
       ),
     );
   }
-  
-  // These helper methods return lists of Slivers to be added conditionally
-
-
-
-  // ... (Keep _buildTags and _buildInfoCard methods as they are) ...
 }
 
 class StaticContent extends StatelessWidget {
@@ -178,8 +174,9 @@ class CustomSliverAppBar extends StatelessWidget {
   const CustomSliverAppBar({
     super.key,
     required this.recipe,
+    required this.heroprefix,
   });
-
+  final String heroprefix;
   final Recipe recipe;
 
   @override
@@ -207,24 +204,38 @@ class CustomSliverAppBar extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(recipe.name, 
-                      style: Theme.of(context).textTheme.displayLarge),
+                    Hero(
+                      tag: '${heroprefix}recipe_name_${recipe.id}',
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: Text(
+                          recipe.name, 
+                          style: Theme.of(context).textTheme.displayLarge
+                          ),
+                      ),
+                    ),
                       const SizedBox(height: 8),
-                  TagRowBuilder(recipe: recipe)
+                  Hero(
+                    tag: '${heroprefix}recipe_tags_${recipe.id}',
+                    child: TagRowBuilder(recipe: recipe)
+                    )
                   ],
                 ),
               ),
-              Container(
-                margin: EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: tintColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: SvgPicture.asset('assets/images/${recipe.mealType.name.toLowerCase()}_base.svg',
-                width: 24,
-                height: 24
-                ))
+              Hero(
+                tag: '${heroprefix}recipe_type_${recipe.id}',
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: tintColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: SvgPicture.asset('assets/images/${recipe.mealType.name.toLowerCase()}_base.svg',
+                  width: 24,
+                  height: 24
+                  )),
+              )
             ],
           ),
         )
@@ -235,25 +246,28 @@ class CustomSliverAppBar extends StatelessWidget {
       flexibleSpace: FlexibleSpaceBar(
 
         stretchModes: const [StretchMode.zoomBackground],
-        background:  DecoratedBox(
-          
-            position: DecorationPosition.foreground,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                    const Color(0xFF0E1118),
-                    const Color(0xFF0E1118).withValues(alpha: 0.7),
-                    Colors.transparent,
-                    const Color(0xFF0E1118).withValues(alpha: 0.9),
-                  ],
-                  stops: const [0, 0.3, 0.6,1],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                )
-            ),
-            child: Image.asset(recipe.imagePath, fit: BoxFit.cover),
-             
-            ),
+        background:  Hero(
+          tag: '${heroprefix}recipe_image_${recipe.id}',
+          child: DecoratedBox(
+            
+              position: DecorationPosition.foreground,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                      const Color(0xFF0E1118),
+                      const Color(0xFF0E1118).withValues(alpha: 0.7),
+                      Colors.transparent,
+                      const Color(0xFF0E1118).withValues(alpha: 0.9),
+                    ],
+                    stops: const [0, 0.3, 0.6,1],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  )
+              ),
+              child: Image.asset(recipe.imagePath, fit: BoxFit.cover),
+               
+              ),
+        ),
       ),
       title: SafeArea(
 
@@ -267,9 +281,15 @@ class CustomSliverAppBar extends StatelessWidget {
 
               BlurredCircleIcon(icon: Icons.arrow_back, onPressed: () => context.router.pop(), iconcolor: Colors.white,),
 
-              FavouriteIcon(recipe: recipe)
-            ],
-          ),]
+              Hero(
+                tag: '${heroprefix}recipe_favorite_${recipe.id}',
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: FavouriteIcon(recipe: recipe))
+                )
+              ],
+            ),
+          ]
         ),
       ),
       titleSpacing: 16.0,
@@ -329,12 +349,20 @@ class FavouriteIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+     final filterRecipe=  context.watch<ExploreCubit>().state.filteredRecipes.firstWhere((element) => element.id==recipe.id);
     return BlocSelector<FavouritedCubit, FavouritedState, bool>(
       selector: (state) => state.favouritedRecipes.contains(recipe),
       builder: (contet, isFavourited){
         return BlurredCircleIcon(
             onPressed: () {
-              contet.read<FavouritedCubit>().toggleFavourite(recipe);
+             
+              final favRec= recipe;
+              print('the hashcode from all recipes : ${filterRecipe.hashCode}');
+              print('the hashcode from the toggle bitton : ${favRec.hashCode}');
+              context.read<FavouritedCubit>().toggleFavourite(recipe);
+              final allfavedrec=context.read<FavouritedCubit>().state.favouritedRecipes;
+              print(favRec.runtimeType==filterRecipe.runtimeType?'equal':'not equal');
+              print(allfavedrec);
             },
             icon: Icons.favorite,
             iconcolor: isFavourited?Colors.red:Colors.white

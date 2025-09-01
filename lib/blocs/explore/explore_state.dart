@@ -3,8 +3,6 @@ import 'package:mini_project_1/data/models/models.dart'; // <-- Replace with you
 
 part 'explore_state.freezed.dart';
 
-/// Enum to manage the view type toggle (List vs Grid) for the recipe list.
-enum ExploreViewType { list, grid }
 
 @freezed
 abstract class ExploreState with _$ExploreState {
