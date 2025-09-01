@@ -203,6 +203,7 @@ class _RandomizerDialogState extends State<RandomizerDialog> {
                 },
                 child: SizedBox(
                   height: 200,
+                  width: 400,
                   child: RecipeGridCard(recipe: _currentRecipe)),
               ),
         

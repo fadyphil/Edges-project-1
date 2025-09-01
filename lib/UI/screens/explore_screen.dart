@@ -31,58 +31,65 @@ class ExploreScreen extends StatelessWidget {
               
               // THE CORE CHANGE: We now use CustomScrollView instead of Column.
               return SafeArea(
-                child: CustomScrollView(
-                  slivers: [
-                    // --- SLIVERS FOR STATIC-LIKE CONTENT ---
-                    // We wrap single "box" widgets in SliverToBoxAdapter to use them in a sliver list.
-                    
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: GreetingSentence(
-                          greeting: _getTimeForGreeting, 
-                          username: username
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: 800,
+                    ),
+                    child: CustomScrollView(
+                      slivers: [
+                        // --- SLIVERS FOR STATIC-LIKE CONTENT ---
+                        // We wrap single "box" widgets in SliverToBoxAdapter to use them in a sliver list.
+                        
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: GreetingSentence(
+                              greeting: _getTimeForGreeting, 
+                              username: username
+                              ),
                           ),
-                      ),
+                        ),
+                    
+                        // Selector for Today's Challenge Card
+                        SliverToBoxAdapter(
+                          child: BlocSelector<ExploreCubit, ExploreState, Recipe?>(
+                            selector: (state) => state.todaysChallenge,
+                            builder: (context, recipe) {
+                           
+                              return recipe != null
+                                  ? TodayChallengeCard(recipe: recipe)
+                                  : const SizedBox.shrink();
+                            },
+                          ),
+                        ),
+                    
+                        const SliverToBoxAdapter(child: RandomPicker()),
+                        const  SliverToBoxAdapter(
+                          child: LabelSeparator(label: 'Recipes')
+                          ),
+                    
+                        // Selector for the Search and Filter Bar
+                       const SliverToBoxAdapter(
+                          child:SearchAndFilterBar()
+                        ),
+                    
+                        // --- THE HIGHLY-PERFORMANT SLIVER LIST ---
+                        // This selector now returns a SliverList or SliverGrid directly.
+                        BlocBuilder<ExploreCubit, ExploreState>(
+                          buildWhen: (previous, current) {
+                            return previous.filteredRecipes != current.filteredRecipes
+                            || previous.theViewType!=current.theViewType;
+                          },
+                          builder: (context,state){
+                            return state.theViewType==ExploreViewType.grid?
+                            GridSliverRecipes(allRecipes: state.filteredRecipes):
+                            ListSliverRecipes(allRecipes: state.filteredRecipes) ;
+                          }
+                          )
+                      ],
                     ),
-
-                    // Selector for Today's Challenge Card
-                    SliverToBoxAdapter(
-                      child: BlocSelector<ExploreCubit, ExploreState, Recipe?>(
-                        selector: (state) => state.todaysChallenge,
-                        builder: (context, recipe) {
-                       
-                          return recipe != null
-                              ? TodayChallengeCard(recipe: recipe)
-                              : const SizedBox.shrink();
-                        },
-                      ),
-                    ),
-
-                    const SliverToBoxAdapter(child: RandomPicker()),
-                    const  SliverToBoxAdapter(
-                      child: LabelSeparator(label: 'Recipes')
-                      ),
-
-                    // Selector for the Search and Filter Bar
-                   const SliverToBoxAdapter(
-                      child:SearchAndFilterBar()
-                    ),
-
-                    // --- THE HIGHLY-PERFORMANT SLIVER LIST ---
-                    // This selector now returns a SliverList or SliverGrid directly.
-                    BlocBuilder<ExploreCubit, ExploreState>(
-                      buildWhen: (previous, current) {
-                        return previous.filteredRecipes != current.filteredRecipes
-                        || previous.theViewType!=current.theViewType;
-                      },
-                      builder: (context,state){
-                        return state.theViewType==ExploreViewType.grid?
-                        GridSliverRecipes(allRecipes: state.filteredRecipes):
-                        ListSliverRecipes(allRecipes: state.filteredRecipes) ;
-                      }
-                      )
-                  ],
+                  ),
                 ),
               );
             },
