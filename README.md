@@ -19,9 +19,9 @@ This repository serves as a proof-of-concept for my ability to implement product
 | Explore Screen | Recipe Details |
 |:---:|:---:|
 | <p align="center">
-  <img src="assets/images/Screenrecorder-2025-12-05-19-45-05-383.mp4" width="250" />
-</p>|<p align="center">
-  <img src="assets/images/recipe-details.gif" width="250" />
+  <img src="assets/images/Screenrecorder-2025-12-05-19-45-05-383.mp4" width="220" />
+  
+  <img src="assets/images/recipe-screen.gif" width="220" />
 </p>|
 
 
