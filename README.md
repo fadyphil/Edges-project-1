@@ -1,58 +1,153 @@
-# 🍳 Recipe Challenge App
+# Culinary Companion (Edges-project-1)
 
-> **My First Flutter Project** | Focused on State Management & BLoC Pattern
-
-A mobile application that challenges users to cook new recipes. This project was built to master the fundamentals of **Flutter** and rigorous state management using **BLoC (Business Logic Component)**.
+> **A robust Flutter application designed to master the BLoC pattern and Clean Architecture principles.**
 
 ---
 
-### 🚀 Key Features
-* **Recipe Feed:** Browse a list of cooking challenges.
-* **State Management:** Robust handling of UI states (Loading, Success, Error) using BLoC.
-* **Reactive UI:** Screens update automatically based on state changes without `setState` spaghetti code.
+## 💡 About The Project
 
-### 🛠️ Tech Stack
-* **Framework:** Flutter (Dart)
-* **State Management:** `flutter_bloc`
-* **Architecture:** UI and Logic separation
+**Culinary Companion** is a recipe discovery and cooking challenge application built with a laser focus on scalable app architecture.
 
-### 💡 What I Learned
-As my first step into mobile development, this project taught me:
-1.  How to separate **Business Logic** from **UI** code.
-2.  Understanding Streams and Events in Dart.
-3.  Structuring a Flutter project for scalability from Day 1.
+As my inaugural Flutter project ("Edges-project-1"), the primary objective was not just to build a functional UI, but to strictly separate business logic from the presentation layer. By strictly adhering to the **BLoC (Business Logic Component)** pattern, this project demonstrates how to handle complex state flows—including asynchronous data fetching, local caching, and reactive UI updates—in a clean, testable manner.
+
+This repository serves as a proof-of-concept for my ability to implement production-grade state management and routing in Flutter.
 
 ---
 
-### 📸 Screenshots
-| Home Screen | Details Screen |
+## 📸 Screenshots
+
+| Explore Screen | Recipe Details |
 |:---:|:---:|
-| <img src="" width="200" alt="Upload Screenshot 1" /> | <img src="" width="200" alt="Upload Screenshot 2" /> |
-
-### 🔧 Installation
-1. Clone the repo
-
-   git clone [https://github.com/fadyphil/Edges-project-1.git](https://github.com/fadyphil/Edges-project-1.git)
-
-
-2.  Install dependencies
-    
-      flutter pub get
-    
-3.  Run the app
-    
-    flutter run
-    
+| <img src="![Uploading explore-screen.gif…]()
+" width="220" /> | <img src="![Uploading recipe-screen.gif…]()
+" width="220" /> |
 
 ---
 
-### **Actionable Advice to Improve the Repo**
-To make this repository look 10x better to anyone visiting your profile:
+## 🛠 Tech Stack
 
-1.  **Rename the Repository (Optional):** `Edges-project-1` is a bit vague. Changing the name to `flutter-recipe-challenge` (in the Settings tab of the repo) makes it instantly searchable and clear.
-2.  **Add the "About" Section on the Sidebar:**
-    * Go to your repo page.
-    * Click the ⚙️ icon next to "About" on the right sidebar.
-    * **Description:** "A Recipe Challenge app built to practice BLoC and State Management in Flutter."
-    * **Topics:** Add `flutter`, `bloc`, `dart`, `beginner-project`.
-3.  **Upload Screenshots:** A visual is worth 1,000 lines of code. Even if the UI is simple, showing that it *runs* is crucial.
+I carefully selected a modern tech stack to ensure type safety, immutability, and performance.
+
+* **Framework**: [Flutter](https://flutter.dev/) (Dart 3)
+* **State Management**: [`flutter_bloc`](https://pub.dev/packages/flutter_bloc) (Cubit flavor) for predictable state changes.
+* **Immutability**: [`freezed`](https://pub.dev/packages/freezed) for generating immutable state unions and data classes.
+* **Navigation**: [`auto_route`](https://pub.dev/packages/auto_route) for strictly typed, declarative routing.
+* **Networking**: [`dio`](https://pub.dev/packages/dio) for robust HTTP requests and interceptors.
+* **Data Parsing**: [`json_serializable`](https://pub.dev/packages/json_serializable) for efficient JSON serialization.
+* **Local Storage**: [`shared_preferences`](https://pub.dev/packages/shared_preferences) & Custom Caching logic.
+* **Assets**: `flutter_svg` & `google_fonts` for a polished UI.
+
+---
+
+## 🚀 Key Features
+
+* **Explore & Discover**: Browse a curated list of recipes with the ability to toggle between **Grid** and **List** layouts.
+* **Smart Filtering**: Client-side filtering of recipes based on search queries and dynamic tags (e.g., "Breakfast", "Easy").
+* **Daily Challenge**: A logic-driven "Recipe of the Day" computed deterministically based on the date.
+* **Favorites System**: Persist beloved recipes locally for quick access.
+* **Cooking History**: Track recently viewed or cooked recipes.
+* **Robust Error Handling**: Graceful UI states for loading, errors, and empty datasets.
+
+---
+
+## 💻 Code Highlight: Logic-Driven State
+
+One of the cleanest patterns in this project is the use of **computed properties on Freezed states**. Instead of cluttering the UI with logic, the State itself exposes getters that derive data.
+
+Below is a snippet from `ExploreState`. Notice how `todaysChallenge` and `filteredRecipes` are calculated dynamically based on the current state union, keeping the UI code purely declarative.
+
+```dart
+// lib/blocs/explore/explore_state.dart
+
+@freezed
+abstract class ExploreState with _$ExploreState {
+  const ExploreState._();
+
+  const factory ExploreState.initial() = _Initial;
+  const factory ExploreState.loading() = _Loading;
+  const factory ExploreState.loaded({
+    required List<Recipe> allRecipes,
+    @Default('') String searchQuery,
+    @Default({}) final Set<String> selectedTags,
+    // ... other fields
+  }) = _Loaded;
+
+  /// Calculates the "Today's Challenge" recipe on the fly.
+  /// Returns null if data isn't loaded, preventing UI crashes.
+  Recipe? get todaysChallenge {
+    return when(
+      initial: () => null,
+      loading: () => null,
+      loaded: (allRecipes, _, __, ___, ____) {
+        if (allRecipes.isEmpty) return null;
+        
+        // Deterministic daily rotation logic
+        final dayOfYear = DateTime.now().day;
+        final challengeIndex = dayOfYear % allRecipes.length;
+        return allRecipes[challengeIndex];
+      },
+      error: (message) => null,
+    );
+  }
+}
+````
+
+-----
+
+## 📂 Project Structure
+
+The project follows a **Layered Architecture**, separating concerns into Data, Business Logic, and UI.
+
+```text
+lib/
+├── blocs/           # State Management (Cubits & Freezed States)
+│   ├── explore/     # Logic for the Explore screen
+│   ├── favourited/  # Logic for user favorites
+│   └── historyy/    # Logic for tracking user history
+├── data/            # Data Layer
+│   ├── api/         # API Services & Interceptors
+│   ├── models/      # Data Transfer Objects (DTOs) & Entities
+│   └── repos/       # Repositories (Abstraction over data sources)
+├── ui/              # Presentation Layer
+│   ├── screens/     # Full-page screens
+│   └── widgets/     # Reusable UI components
+├── routes/          # AutoRoute configuration
+├── theme/           # App-wide styling and themes
+└── main.dart        # Entry point
+```
+
+-----
+
+## 🔌 Installation
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone [https://github.com/fadyphil/Edges-project-1.git](https://github.com/fadyphil/Edges-project-1.git)
+    cd Edges-project-1
+    ```
+
+2.  **Install Dependencies:**
+
+    ```bash
+    flutter pub get
+    ```
+
+3.  **Run Code Generation:**
+    This project uses `build_runner` for Freezed and AutoRoute.
+
+    ```bash
+    dart run build_runner build --delete-conflicting-outputs
+    ```
+
+4.  **Run the App:**
+
+    ```bash
+    flutter run
+    ```
+
+-----
+
+*Crafted with ❤️ and Flutter.*
+
+```
