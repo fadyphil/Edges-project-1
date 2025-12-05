@@ -18,7 +18,7 @@ This repository serves as a proof-of-concept for my ability to implement product
 
 | Explore Screen | Recipe Details |
 |:---:|:---:|
-|<img src="https://via.placeholder.com/220x400?text=Explore+Screen" width="220" /> |<img src="https://via.placeholder.com/220x400?text=Explore+Screen" width="220" /> |
+|<img src="assets/images/explore-screen-NEW.gif" width="220" /> |<img src="assets/images/recipe-screen.gif" width="220" /> |
 
 
 ---
