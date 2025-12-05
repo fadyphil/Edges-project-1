@@ -148,5 +148,3 @@ lib/
 -----
 
 *Crafted with ❤️ and Flutter.*
-
-```
