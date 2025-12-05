@@ -18,9 +18,10 @@ This repository serves as a proof-of-concept for my ability to implement product
 
 | Explore Screen | Recipe Details |
 |:---:|:---:|
-| <img src="![Uploading explore-screen.gif…]()
-" width="220" /> | <img src="![Uploading recipe-screen.gif…]()
+| <img src="
+" width="220" /> | <img src="
 " width="220" /> |
+
 
 ---
 
